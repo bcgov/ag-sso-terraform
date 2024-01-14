@@ -28,9 +28,10 @@ module "COMMON_SSO_DEV" {
   source = "./common-sso-dev"
 
 
-  client_id     = var.dev_client_id
-  client_secret = var.dev_client_secret
-  keycloak_url  = var.dev_keycloak_url
+  client_id        = var.dev_client_id
+  client_secret    = var.dev_client_secret
+  keycloak_url     = var.dev_keycloak_url
+  client_auth_pass = var.client_auth_pass
 }
 
 # module "COMMON_SSO_TEST" {
