@@ -71,5 +71,5 @@ module "service-account-roles" {
     }
   }
   depends_on = [module.client-roles]
-  
+
 }

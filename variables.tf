@@ -1,7 +1,7 @@
 # COMMON_SSSO_DEV
 variable "dev_client_id" {
   description = "The client_id for the Keycloak client"
-  default = "service-config"
+  default     = "service-config"
 
 }
 

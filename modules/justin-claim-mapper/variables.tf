@@ -13,13 +13,13 @@ variable "client_id" {
 variable "mapper_name" {
   description = "Name of the protocol mapper"
   type        = string
-  default = "justin-participant"
+  default     = "justin-participant"
 }
 
 variable "protocol" {
   description = "Protocol for the protocol mapper"
   type        = string
-  default = "openid-connect"
+  default     = "openid-connect"
 }
 
 variable "config" {
@@ -30,19 +30,19 @@ variable "config" {
 variable "remote_url" {
   description = "URL for the remote claim API"
   type        = string
-  default = "https://custom-claim-api-e648d1-dev.apps.emerald.devops.gov.bc.ca/api/participant"
+  default     = "https://custom-claim-api-e648d1-dev.apps.emerald.devops.gov.bc.ca/api/participant"
 }
 
 variable "client_auth_url" {
   description = "URL for client authentication"
   type        = string
-  default = "https://sso-e27db1-dev.apps.gold.devops.gov.bc.ca/auth/realms/DEMS/protocol/openid-connect/token"
+  default     = "https://sso-e27db1-dev.apps.gold.devops.gov.bc.ca/auth/realms/DEMS/protocol/openid-connect/token"
 }
 
 variable "client_auth_id" {
   description = "Client ID for client authentication"
   type        = string
-  default = "justin-participant-client"
+  default     = "justin-participant-client"
 }
 
 variable "client_auth_pass" {

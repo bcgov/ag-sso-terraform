@@ -23,10 +23,10 @@ resource "keycloak_openid_client" "CLIENT" {
 }
 
 module "justin_claim" {
-  source = "../../../../../modules/justin-claim-mapper"
-  realm_id  = keycloak_openid_client.CLIENT.realm_id
-  client_id = keycloak_openid_client.CLIENT.id
-  mapper_name  = "justin-participant"
+  source           = "../../../../../modules/justin-claim-mapper"
+  realm_id         = keycloak_openid_client.CLIENT.realm_id
+  client_id        = keycloak_openid_client.CLIENT.id
+  mapper_name      = "justin-participant"
   client_auth_pass = var.client_auth_pass
   config = {
     "remote.parameters.user.attributes" = "firstname&lastName&email",

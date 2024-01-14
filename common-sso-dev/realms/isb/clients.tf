@@ -8,8 +8,8 @@ module "CONNECT" {
   source = "./clients/connect"
 }
 module "DMFT-SERVICE" {
-  source       = "./clients/dmft-service"
-  PIDP-SERVICE = module.PIDP-SERVICE
+  source           = "./clients/dmft-service"
+  PIDP-SERVICE     = module.PIDP-SERVICE
   client_auth_pass = var.client_auth_pass
 }
 module "USER-MANAGEMENT-SERVICE" {
