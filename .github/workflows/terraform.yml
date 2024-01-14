@@ -1,0 +1,130 @@
+name: "Terraform"
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  terraform:
+    name: "Terraform"
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      TF_VAR_dev_client_secret: ${{ secrets.TF_VAR_DEV_CLIENT_SECRET }}
+      TF_VAR_test_client_secret: ${{ secrets.TF_VAR_TEST_CLIENT_SECRET }}
+      TF_VAR_prod_client_secret: ${{ secrets.TF_VAR_PROD_CLIENT_SECRET }}
+      TF_VAR_client_auth_pass: ${{ secrets.TF_VAR_CLIENT_AUTH_PASS }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: ~1.6.6
+          cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+
+      - name: Terraform Format
+        id: fmt
+        run: terraform fmt -check -recursive -diff
+
+      - name: Terraform Format Error Details
+        uses: actions/github-script@v6
+        if: ${{ failure() }}
+        with:
+          script: |
+            const output = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
+           
+            <details><summary>Terraform formatting errors</summary>
+
+            \`\`\`\n
+            ${{ steps.fmt.outputs.stdout }}
+            \`\`\`
+
+            <br>
+            To resolve the issues:
+            <br>
+            <a href="https://github.com/bcgov/moh-keycloak-client-configurations#terraform-format">Terraform format instructions</a>
+            </details>
+
+            *Pushed by: @${{ github.actor }}, Action: \`${{ github.event_name }}\`*`;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: output
+            })
+
+      - name: Terraform Init
+        id: init
+        run: |
+          terraform init \
+          -backend-config="access_key=${{ env.AWS_ACCESS_KEY_ID }}" \
+          -backend-config="secret_key=${{ env.AWS_SECRET_ACCESS_KEY }}" \
+
+      - name: Terraform Validate
+        id: validate
+        run: terraform validate -no-color
+
+      - name: Terraform Plan
+        id: plan
+        if: github.event_name == 'pull_request'
+        run: terraform plan -no-color -input=false
+        continue-on-error: true
+
+      - name: Truncate Terraform Plan
+        run: |
+          plan=$(tail -n 100 <<'EOF'
+          ${{ steps.plan.outputs.stdout }}
+          EOF
+          )
+          echo "PLAN<<EOF" >> $GITHUB_ENV
+          echo "${plan}" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+      - uses: actions/github-script@v6
+        if: github.event_name == 'pull_request'
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const output = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
+            #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
+            #### Terraform Validation 🤖\`${{ steps.validate.outcome }}\`
+            #### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
+
+            <details><summary>Show Plan</summary>
+
+            \`\`\`\n
+            ${process.env.PLAN}
+            \`\`\`
+
+            </details>
+
+            *Pushed by: @${{ github.actor }}, Action: \`${{ github.event_name }}\`*`;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: output
+            })
+
+      - name: Terraform Plan Status
+        if: steps.plan.outcome == 'failure'
+        run: exit 1
+
+      - name: Terraform Apply
+        id: apply
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: terraform apply -auto-approve -input=false
+
+        
+      - name: Terraform Destroy
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push' && steps.apply.outcome == 'failure'
+        run: terraform destroy -auto-approve -input=false
