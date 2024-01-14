@@ -7,7 +7,6 @@ variable "dev_client_id" {
 
 variable "dev_client_secret" {
   description = "The client_secret for the Keycloak client"
-  default = "kbQTmwQ6yke1Uo4gcnE1w0Jont9N67sK"
 }
 
 variable "dev_keycloak_url" {
