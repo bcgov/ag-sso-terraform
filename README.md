@@ -1,15 +1,15 @@
-# MoH Keycloak client configuration
+# AG PSSG Common SSO Realm and Client Configuration
 
-This repository holds Keycloak client configuration files for the Ministry of Health Keycloak instance. Developers can open pull requests to change their client configuration.
+This repository holds the keycloak realms and client configuration files for the Ministry of Attorney General and Public Safety Redhat SSO instance. Developers can open pull requests to create or change their client or realm configuration.
 
-## How to update a client configuration
+## How to create or update a client configuration
 
-1. Get permission from the Access Management Team to make pull requests to this repo.
-2. Create a pull request with your proposed changes to a client configuration file. Make sure your changes are [properly formatted](#terraform-format).
-3. An automatic process will compare your changes to the current state of Keycloak.
+1. Get permission from the DIAM Team to make pull requests to this repo.
+2. Create a pull request with your proposed changes to client configuration file. Make sure your changes are [properly formatted](#terraform-format).
+3. An automatic process will compare your changes to the current state of Red hat SSO.
 4. A bot will add a comparison report to your pull request.
 5. An Access Management Team member will merge your changes into the `main` branch.
-6. An automatic process will apply your changes to the Keycloak instance.
+6. An automatic process will apply your changes to the Common SSO Red hat instance.
 
 ## Automation
 
@@ -42,7 +42,7 @@ The workflow will:
 1. **Update Pull Request** adds a comment to the pull request with the results of the format, init and plan steps. In addition, it displays the plan output (`steps.plan.outputs.stdout`). This allows your team to review the results of the plan directly in the PR instead of viewing the GitHub Actions log. This step only runs on pull requests.
 1. **Terraform Plan Status** returns whether a plan was successfully generated or not. This step highlights whenever a plan fails because the "Terraform Plan" step continues on error.
 1. **Terraform Apply** applies the configuration. This step will only run when a commit is pushed to main.
-
+1. ** Terraform Destroy** If there's an error applying your terrform plan, a rollback will be triggered to destroy any plan that was created initially. This allow us to rollback our red hat sso to its previous state before running your plan
 ### Local set-up (Access Management team only)
 
 In some rare cases you may need to set up Terraform locally. It is easy to do so. Note that this same
@@ -74,21 +74,7 @@ Terraform uses these secrets to access its state file stored on AWS.
 * `TF_VAR_dev_client_secret`
 * `TF_VAR_test_client_secret`
 * `TF_VAR_prod_client_secret`
-
-The values for the AWS environment variables are stored in the AWS Parameter Store for
-parameter `/octk/service-accounts/s3-admin`.
-
-Example:
-
-```json
-{
-  "access_key_id": "VALUE_OF_AWS_ACCESS_KEY_ID",
-  "access_key_secret": "VALUE_OF_AWS_SECRET_ACCESS_KEY",
-  "roles": {
-    "cey5wq_tools_s3_admin": "VALUE_OF_AWS_S3_BACKEND_ROLE_ARN"
-  }
-}
-```
+* `TF_VAR_CLIENT_AUTH_PASS` # this is the client credential secret for keycloak client with custom claim to JUSTIN
 
 The values for the `TF_VAR_ENV_client_secret` environment variables are Keycloak client secrets. To retrieve them, login to the development, test, and production Keycloak Admin Console and lookup their values at `ISB (realm) > terraform (client) > Credentials (tab)`.
 
@@ -98,35 +84,15 @@ The values for the `TF_VAR_ENV_client_secret` environment variables are Keycloak
 * [Terraform S3 backend](https://www.terraform.io/language/settings/backends/s3)
 * [Terraform Keycloak Provider](https://registry.terraform.io/providers/mrparkers/keycloak/latest/docs)
 
-## Notes for starting from scratch
+## Terraform State File using Minio S3 Compatible Storage
 
-The Terraform state file containing Keycloak configuration is stored in an S3 bucket on the BCGOV AWS platform. In order for this to work, Terraform requires a service account with the necessary permissions to access the bucket. To fulfill this requirement, a request was submitted on the BCGOV Cloud RocketChat channel. The following is the text of the original request.
+The Terraform state file containing our Red hat Keycloak configuration is stored in an S3 compatible storgae (Minio) hosted internally in our Gold Cluster. In order for this to work, Terraform requires a service account with the necessary permissions to access the bucket. To fulfill this requirement, an acess key and secret was created in Minio with the necessily permission to read and write TF state files into our bucket
 
-> May I request a service account to have AmazonS3FullAccess Managed policy in the cey5wq-tools environment?
-> 
-> Assuming we create buckets prefixed with the license plate cey5wq, can we have the service account that have enough permissions to control the buckets prefixed with cey5wq? Something like this below?
-> 
-> (My intent is to store Terraform state for our Keycloak instance in a tools-environment S3 bucket.)
-> 
-> ```json
-> {
->   "Version": "2012-10-17",
->   "Statement": [
->     {
->       "Effect": "Allow",
->       "Action": "s3:ListBucket",
->       "Resource": "arn:aws:s3:::cey5wq-*"
->     },
->     {
->       "Effect": "Allow",
->       "Action": ["s3:GetObject", "s3:PutObject", "s3:DeleteObject"],
->       "Resource": "arn:aws:s3:::cey5wq-*"
->     }
->   ]
-> }
-> ```
+
 
 ## Acknowledgements
 
 This README uses some text verbatim and diagrams
 from [Terraform's documentation](https://learn.hashicorp.com/tutorials/terraform/github-actions).
+[Terraform Keycloak Provide](https://registry.terraform.io/providers/mrparkers/keycloak/latest/docs)
+[Terraform OIDC Client](https://registry.terraform.io/providers/mrparkers/keycloak/latest/docs/resources/openid_client)
