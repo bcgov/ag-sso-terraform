@@ -42,7 +42,8 @@ The workflow will:
 1. **Update Pull Request** adds a comment to the pull request with the results of the format, init and plan steps. In addition, it displays the plan output (`steps.plan.outputs.stdout`). This allows your team to review the results of the plan directly in the PR instead of viewing the GitHub Actions log. This step only runs on pull requests.
 1. **Terraform Plan Status** returns whether a plan was successfully generated or not. This step highlights whenever a plan fails because the "Terraform Plan" step continues on error.
 1. **Terraform Apply** applies the configuration. This step will only run when a commit is pushed to main.
-1. ** Terraform Destroy** If there's an error applying your terrform plan, a rollback will be triggered to destroy any plan that was created initially. This allow us to rollback our red hat sso to its previous state before running your plan
+1. **Terraform Destroy** If there's an error applying your terrform plan, a rollback will be triggered to destroy any plan that was created initially. This allow us to rollback our red hat sso to its previous state before running your plan
+
 ### Local set-up (Access Management team only)
 
 In some rare cases you may need to set up Terraform locally. It is easy to do so. Note that this same
@@ -51,7 +52,7 @@ configuration is used by GitHub Actions, so may refer to its commands and secret
 1. Install Terraform (use version identified in https://github.com/bcgov/moh-keycloak-client-configurations/blob/main/.github/workflows/terraform.yml).
 2. Set environment variables.
 3. Checkout the project.
-4. Run `terraform init -backend-config="role_arn=$AWS_S3_BACKEND_ROLE_ARN`".
+4. Run `terraform init -backend-config="access_key={MINIO_ACCESS_KEY_ID}" -backend-config="secret_key={{MINIO_SECRET_KEY}}"`.
 
 Once the above steps are complete, you will be able to run all Terraform commands.
 
