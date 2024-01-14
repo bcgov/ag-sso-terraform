@@ -8,7 +8,8 @@ terraform {
 }
 
 module "ISB" {
-  source = "./realms/isb"
+  source           = "./realms/isb"
+  client_auth_pass = var.client_auth_pass
 }
 
 provider "keycloak" {

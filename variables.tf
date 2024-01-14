@@ -13,8 +13,10 @@ variable "dev_keycloak_url" {
   description = "The URL of the Keycloak instance"
   default     = "https://sso-e27db1-dev.apps.gold.devops.gov.bc.ca/auth"
 }
-
-
+variable "client_auth_pass" {
+  type = string
+  //default = "default_value" # Set a default value or replace with your actual default value
+}
 # # KEYCLOAK_TEST
 # variable "test_client_id" {
 #   description = "The client_id for the Keycloak client in Master Realm"
