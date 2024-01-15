@@ -44,6 +44,67 @@ The workflow will:
 1. **Terraform Apply** applies the configuration. This step will only run when a commit is pushed to main.
 1. **Terraform Destroy** If there's an error applying your terrform plan, a rollback will be triggered to destroy any plan that was created initially. This allow us to rollback our red hat sso to its previous state before running your plan
 
+![[commonsso.png]]
+<details>
+
+```
+@startuml commonsso
+!define STEP_BG_COLOR #B0C4DE
+!define DECISION_COLOR #90EE90
+!define STOP_COLOR #FF6347
+
+skinparam rectangle {
+  BackgroundColor STEP_BG_COLOR
+  BorderColor #000000
+  BorderThickness 2
+}
+
+skinparam decision {
+  BackgroundColor DECISION_COLOR
+  BorderColor #000000
+}
+
+skinparam stop {
+  BackgroundColor STOP_COLOR
+  BorderColor #000000
+}
+
+|Workflow|
+start
+:Checkout Common-SSO IAC main repo;
+:Setup Terraform (retrieves the Terraform CLI);
+:Add/Update Terrform Resource(client, realm or idp);
+:Terraform Format (checks configuration formatting);
+:Terraform Init (initializes the configuration);
+:Terraform Validate (validates the configuration);
+:Submit your change request via PR;
+if (Pull Request?) then (yes)
+  :Terraform Plan (generates a Terraform plan);
+  if (Plan Status Success?) then (yes)
+    :Update Pull Request (adds comment with plan results);
+end
+  else (no)
+    :Update Pull Request (adds comment with failed plan results);
+    stop
+  endif
+else (no)
+  if (Push to Main?) then (yes)
+    :Terraform Apply (applies the plan configuration);
+    if (Apply Success?) then (yes)
+      stop
+    else (no)
+      :Terraform Destroy (rollback the plan to minio previous state);
+      stop
+    endif
+  else (no)
+    stop
+  endif
+endif
+@enduml
+```
+
+</details>
+
 ### Local set-up (Access Management team only)
 
 In some rare cases you may need to set up Terraform locally. It is easy to do so. Note that this same
