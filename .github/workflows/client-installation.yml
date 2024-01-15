@@ -9,6 +9,11 @@ on:
       env:
         description: 'Environment'
         required: true
+        type: choice
+        options: 
+          - DEV
+          - TEST
+          - PROD
       realm:
         description: 'Realm'
         required: true
@@ -19,7 +24,7 @@ on:
 jobs:
   client-installation-json:
     environment:
-      name: DEV
+      name:  ${{ github.event.inputs.env }}
     runs-on: ubuntu-latest
 
     steps:
@@ -49,7 +54,23 @@ jobs:
           client_id=${{ github.event.inputs.client-id }}
           env=${{ github.event.inputs.env }}
           realm=${{ github.event.inputs.realm }}
-          ./get_client_installation_json.sh ${{ github.event.inputs.client-id }} ${{ github.event.inputs.env }} ${{ github.event.inputs.realm }} ${{secrets.TF_VAR_DEV_CLIENT_SECRET}}> output_file.txt
+        
+          input_env="${{ github.event.inputs.env }}"
+          
+          if [ "$input_env" == "DEV" ]; then
+            echo "Running script for DEV environment..."
+            ./get_client_installation_json.sh ${{ github.event.inputs.client-id }} ${{ github.event.inputs.env }} ${{ github.event.inputs.realm }} ${{secrets.TF_VAR_DEV_CLIENT_SECRET}}> output_file.txt
+          elif [ "$input_env" == "TEST" ]; then
+            echo "Running script for TEST environment..."
+            ./get_client_installation_json.sh ${{ github.event.inputs.client-id }} ${{ github.event.inputs.env }} ${{ github.event.inputs.realm }} ${{secrets.TF_VAR_DEV_CLIENT_SECRET}}> output_file.txt
+          elif [ "$input_env" == "PROD" ]; then
+            echo "Running script for PROD environment..."
+            ./get_client_installation_json.sh ${{ github.event.inputs.client-id }} ${{ github.event.inputs.env }} ${{ github.event.inputs.realm }} ${{secrets.TF_VAR_PROD_CLIENT_SECRET}}> output_file.txt
+          else
+            echo "Invalid environment. Allowed values: dev, test, prod."
+            exit 1
+          fi
+          
           if grep -q "Invalid http_code" output_file.txt; then
             echo "Invalid http_code in the output. Failing the workflow."
             cat output_file.txt
