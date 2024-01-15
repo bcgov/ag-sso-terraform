@@ -1,4 +1,4 @@
-name: Manual Workflow
+name: Client Installtion Json
 
 on:
   workflow_dispatch:
@@ -14,7 +14,7 @@ on:
         required: true
 
 jobs:
-  job1:
+  installtion-json:
     runs-on: ubuntu-latest
 
     steps:
@@ -28,6 +28,7 @@ jobs:
           echo "Environment: ${{ github.event.inputs.env }}"
           echo "Realm: ${{ github.event.inputs.realm }}"
       - name: Get Client Installation JSON
+        id: client_installation
         if: github.actor  == 'sookeke' || github.actor == 'lee.wright' 
         run: |
           client_id=${{ github.event.inputs.client-id }}
@@ -35,4 +36,17 @@ jobs:
           realm=${{ github.event.inputs.realm }}
           ls
           ./get_client_installation_json.sh ${{ github.event.inputs.client-id }} ${{ github.event.inputs.env }} ${{ github.event.inputs.realm }}
+
+          convert the result to base 64 that will be attached to the email in the send email step
+      - name: Get Email Access Token 
+        if: steps.client_installation.outcome == 'success'
+        uses: fjogeleit/http-request-action@v1
+        with:
+          url: 'https://dev.loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token'
+          method: 'POST'
+          username: ${{ secrets.CHES_DEV_CLIENT_ID}}
+          password: ${{ secrets.CHES_DEV_CLIENT_SECRET }}
+          customHeaders: '{"Content-Type": "application/x-www-form-urlencoded"}'
+          data: '{"grant_type": "client_credentials"}'
+          
 
