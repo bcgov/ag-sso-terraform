@@ -51,7 +51,7 @@ jobs:
             echo $encoded_contents
             echo "::set-output name=encoded_contents::$encoded_contents"
       - name: Get Email Access Token 
-        if: steps.client_installation.outcome == 'success' && steps.encode == 'success'
+        if: steps.client_installation.outcome == 'success' && steps.encode.outcome == 'success'
         id: token
         uses: fjogeleit/http-request-action@v1
         with:
@@ -62,7 +62,7 @@ jobs:
           customHeaders: '{"Content-Type": "application/x-www-form-urlencoded"}'
           data: '{"grant_type": "client_credentials"}'
       - name: Send Email 
-        if: steps.token.outcome == 'success' && steps.encode == 'success'
+        if: steps.token.outcome == 'success' && steps.encode.outcome == 'success'
         id: email
         uses: fjogeleit/http-request-action@v1
         with:
