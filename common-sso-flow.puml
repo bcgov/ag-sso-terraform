@@ -1,0 +1,53 @@
+@startuml commonsso
+!define STEP_BG_COLOR #B0C4DE
+!define DECISION_COLOR #90EE90
+!define STOP_COLOR #FF6347
+
+skinparam rectangle {
+  BackgroundColor STEP_BG_COLOR
+  BorderColor #000000
+  BorderThickness 2
+}
+
+skinparam decision {
+  BackgroundColor DECISION_COLOR
+  BorderColor #000000
+}
+
+skinparam stop {
+  BackgroundColor STOP_COLOR
+  BorderColor #000000
+}
+
+|Workflow|
+start
+:Checkout Common-SSO IAC main repo;
+:Setup Terraform (retrieves the Terraform CLI);
+:Add/Update Terrform Resource(client, realm or idp);
+:Terraform Format (checks configuration formatting);
+:Terraform Init (initializes the configuration);
+:Terraform Validate (validates the configuration);
+:Submit your change request via PR;
+if (Pull Request?) then (yes)
+  :Terraform Plan (generates a Terraform plan);
+  if (Plan Status Success?) then (yes)
+    :Update Pull Request (adds comment with plan results);
+end
+  else (no)
+    :Update Pull Request (adds comment with failed plan results);
+    stop
+  endif
+else (no)
+  if (Push to Main?) then (yes)
+    :Terraform Apply (applies the plan configuration);
+    if (Apply Success?) then (yes)
+      stop
+    else (no)
+      :Terraform Destroy (rollback the plan to minio previous state);
+      stop
+    endif
+  else (no)
+    stop
+  endif
+endif
+@enduml
