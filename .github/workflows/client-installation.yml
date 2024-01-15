@@ -43,6 +43,7 @@ jobs:
           fi
       - name: Get Email Access Token 
         if: steps.client_installation.outcome == 'success'
+        id: token
         uses: fjogeleit/http-request-action@v1
         with:
           url: 'https://dev.loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token'
@@ -51,5 +52,11 @@ jobs:
           password: ${{ secrets.CHES_DEV_CLIENT_SECRET }}
           customHeaders: '{"Content-Type": "application/x-www-form-urlencoded"}'
           data: '{"grant_type": "client_credentials"}'
+      - name: Show Response
+        run: |
+            echo ${{ steps.token.outputs.response }}
+            echo ${{ steps.token.outputs.headers }}
+            echo ${{ fromJson(steps.token.outputs.response).access_token }}
+      
           
 
