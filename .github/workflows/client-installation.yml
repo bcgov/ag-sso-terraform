@@ -1,4 +1,4 @@
-name: Client Installtion Json
+name: Client Installation
 
 on:
   workflow_dispatch:
@@ -13,11 +13,13 @@ on:
         description: 'Realm'
         required: true
       email:
-        description: 'your government email address'
+        description: 'Requester government email address'
         required: true
 
 jobs:
   client-installation-json:
+    environment:
+      name: DEV
     runs-on: ubuntu-latest
 
     steps:
