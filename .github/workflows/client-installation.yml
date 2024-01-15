@@ -30,6 +30,16 @@ jobs:
           echo "Client ID: ${{ github.event.inputs.client-id }}"
           echo "Environment: ${{ github.event.inputs.env }}"
           echo "Realm: ${{ github.event.inputs.realm }}"
+      - name: Check Email Domain
+        if: github.actor == 'sookeke' || github.actor == 'lee.wright'
+        id: email
+        run: |
+          if [[ "${{ github.event.inputs.email }}" != *'gov.bc.ca' ]]; then
+            echo "Invalid email domain. Failing the workflow."
+            exit 1
+          fi
+          first_name=$(echo "$email" | cut -d'.' -f1)
+          echo "::set-output name=first_name::$first_name"
       - name: Get Client Installation JSON
         id: client_installation
         if: github.actor  == 'sookeke' || github.actor == 'lee.wright' 
@@ -71,7 +81,10 @@ jobs:
             customHeaders: '{"Content-Type": "application/json"}'
             data: '{
                   "bodyType": "html",
-                  "body": "<h1>Hello ${{ github.event.inputs.email }}</h1><p>Attached is your DIAM client installation json:</p>",
+                  "body": "<p>Dear ${{ steps.email.outcome.first_name }},</p>
+                  <p>Thank you for choosing DIAM. Attached is your DIAM client installation JSON, providing you with the latest and most secure features.</p>
+                  <p>Please don''t hesitate to reach out if you have any questions or need further assistance.</p>
+                  <p>Best regards,<br>Your DIAM Support Team</p>",  
                   "delayTS": 0,
                   "encoding": "utf-8",
                   "from": "jpsprovideridentityportal@gov.bc.ca",
