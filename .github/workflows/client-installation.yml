@@ -22,11 +22,13 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Display Inputs
+        if: github.actor  == 'sookeke' || github.actor == 'lee.wright' 
         run: |
           echo "Client ID: ${{ github.event.inputs.client-id }}"
           echo "Environment: ${{ github.event.inputs.env }}"
           echo "Realm: ${{ github.event.inputs.realm }}"
       - name: Get Client Installation JSON
+        if: github.actor  == 'sookeke' || github.actor == 'lee.wright' 
         run: |
           client_id=${{ github.event.inputs.client-id }}
           env=${{ github.event.inputs.env }}
