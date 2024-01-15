@@ -35,7 +35,12 @@ jobs:
           env=${{ github.event.inputs.env }}
           realm=${{ github.event.inputs.realm }}
           ls
-          ./get_client_installation_json.sh ${{ github.event.inputs.client-id }} ${{ github.event.inputs.env }} ${{ github.event.inputs.realm }}
+          ./get_client_installation_json.sh ${{ github.event.inputs.client-id }} ${{ github.event.inputs.env }} ${{ github.event.inputs.realm }} > output_file.txt
+          if grep -q "Invalid http_code" output_file.txt; then
+            echo "Invalid http_code in the output. Failing the workflow."
+            cat output_file.txt
+            exit 1
+          fi
       - name: Get Email Access Token 
         if: steps.client_installation.outcome == 'success'
         uses: fjogeleit/http-request-action@v1

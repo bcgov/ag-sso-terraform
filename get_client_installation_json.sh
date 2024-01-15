@@ -102,7 +102,7 @@ fi
 case "$2" in
     "dev")
         keycloak_host="sso-e27db1-dev.apps.gold.devops.gov.bc.ca"
-        password="$TF_VAR_PROD_CLIENT_SECRET"
+        password="$TF_VAR_DEV_CLIENT_SECRET"
         ;;
     "prod")
         keycloak_host="sso-e27db1-dev.apps.gold.devops.gov.bc.ca"
