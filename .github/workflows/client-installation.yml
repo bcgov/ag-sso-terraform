@@ -17,7 +17,7 @@ on:
         required: true
 
 jobs:
-  installtion-json:
+  client-installation-json:
     runs-on: ubuntu-latest
 
     steps:
