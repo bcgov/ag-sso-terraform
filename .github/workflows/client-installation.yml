@@ -34,5 +34,5 @@ jobs:
           env=${{ github.event.inputs.env }}
           realm=${{ github.event.inputs.realm }}
           ls
-          ./get_client_secret.sh ${{ github.event.inputs.client-id }} ${{ github.event.inputs.env }} ${{ github.event.inputs.realm }}
+          ./get_client_installation_json.sh ${{ github.event.inputs.client-id }} ${{ github.event.inputs.env }} ${{ github.event.inputs.realm }}
 
