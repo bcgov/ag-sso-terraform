@@ -38,12 +38,8 @@ jobs:
             echo "Invalid email domain. Failing the workflow."
             exit 1
           fi
-          first_name=$(echo "$email" | cut -d'.' -f1)
+          first_name=$(echo "${{ github.event.inputs.email }}" | cut -d'.' -f1)
           echo "::set-output name=first_name::$first_name"
-      - name: Use First Name
-        run: |
-            # Assuming you want to use the first name in this step
-            echo "First Name: ${{ steps.email_check.outputs.first_name }}"
       - name: Get Client Installation JSON
         id: client_installation
         if: github.actor  == 'sookeke' || github.actor == 'lee.wright' 
