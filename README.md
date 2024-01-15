@@ -44,8 +44,8 @@ The workflow will:
 1. **Terraform Apply** applies the configuration. This step will only run when a commit is pushed to main.
 1. **Terraform Destroy** If there's an error applying your terrform plan, a rollback will be triggered to destroy any plan that was created initially. This allow us to rollback our red hat sso to its previous state before running your plan
 
-![[commonsso.png]]
-<details>
+![](commonsso.svg)
+<div hidden>
 
 ```
 @startuml commonsso
@@ -103,7 +103,7 @@ endif
 @enduml
 ```
 
-</details>
+</div>
 
 ### Local set-up (Access Management team only)
 
