@@ -12,6 +12,9 @@ on:
       realm:
         description: 'Realm'
         required: true
+      email:
+        description: 'your government email address'
+        required: true
 
 jobs:
   installtion-json:
@@ -34,16 +37,21 @@ jobs:
           client_id=${{ github.event.inputs.client-id }}
           env=${{ github.event.inputs.env }}
           realm=${{ github.event.inputs.realm }}
-          ls
           ./get_client_installation_json.sh ${{ github.event.inputs.client-id }} ${{ github.event.inputs.env }} ${{ github.event.inputs.realm }} ${{secrets.TF_VAR_DEV_CLIENT_SECRET}}> output_file.txt
-          cat output_file.txt
           if grep -q "Invalid http_code" output_file.txt; then
             echo "Invalid http_code in the output. Failing the workflow."
             cat output_file.txt
             exit 1
           fi
-      - name: Get Email Access Token 
+      - name: Encode Installation Json
         if: steps.client_installation.outcome == 'success'
+        id: encode
+        run: |
+            encoded_contents=$(base64 < output_file.txt)
+            echo $encoded_contents
+            echo "::set-output name=encoded_contents::$encoded_contents"
+      - name: Get Email Access Token 
+        if: steps.client_installation.outcome == 'success' && steps.encode == 'success'
         id: token
         uses: fjogeleit/http-request-action@v1
         with:
@@ -53,11 +61,35 @@ jobs:
           password: ${{ secrets.CHES_DEV_CLIENT_SECRET }}
           customHeaders: '{"Content-Type": "application/x-www-form-urlencoded"}'
           data: '{"grant_type": "client_credentials"}'
-      - name: Show Response
-        run: |
-            echo ${{ steps.token.outputs.response }}
-            echo ${{ steps.token.outputs.headers }}
-            echo ${{ fromJson(steps.token.outputs.response).access_token }}
+      - name: Send Email 
+        if: steps.token.outcome == 'success' && steps.encode == 'success'
+        id: email
+        uses: fjogeleit/http-request-action@v1
+        with:
+            url: 'https://ches-dev.api.gov.bc.ca/api/v1/email'
+            method: 'POST'
+            bearerToken: ${{ fromJson(steps.token.outputs.response).access_token }}
+            customHeaders: '{"Content-Type": "application/json"}'
+            data: '{
+                  "bodyType": "html",
+                  "body": "<h1>Hello ${{ github.event.inputs.email }}</h1><p>Attached is your DIAM client installation json:</p>",
+                  "delayTS": 0,
+                  "encoding": "utf-8",
+                  "from": "jpsprovideridentityportal@gov.bc.ca",
+                  "priority": "normal",
+                  "subject": "DIAM Client Installation Json",
+                  "to": ["${{ github.event.inputs.email }}"],
+                  "attachments": [
+                    {
+                      "content": "${{ steps.encode.outputs.encoded_contents }}",
+                      "contentType": "text/markdown",
+                      "encoding": "base64",
+                      "filename": "client-installation.json"
+                    }
+                  ]
+                }
+              '
+
       
           
 
