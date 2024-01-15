@@ -40,6 +40,10 @@ jobs:
           fi
           first_name=$(echo "$email" | cut -d'.' -f1)
           echo "::set-output name=first_name::$first_name"
+      - name: Use First Name
+        run: |
+            # Assuming you want to use the first name in this step
+            echo "First Name: ${{ steps.email_check.outputs.first_name }}"
       - name: Get Client Installation JSON
         id: client_installation
         if: github.actor  == 'sookeke' || github.actor == 'lee.wright' 
@@ -57,8 +61,8 @@ jobs:
         if: steps.client_installation.outcome == 'success'
         id: encode
         run: |
-            encoded_contents=$(base64 < output_file.txt)
-            echo "::set-output name=encoded_contents::$encoded_contents"
+          encoded_contents=$(base64 -w 0 < output_file.txt)
+          echo "::set-output name=encoded_contents::$encoded_contents"
       - name: Get Email Access Token 
         if: steps.client_installation.outcome == 'success' && steps.encode.outcome == 'success'
         id: token
@@ -81,8 +85,8 @@ jobs:
             customHeaders: '{"Content-Type": "application/json"}'
             data: '{
                   "bodyType": "html",
-                  "body": "<p>Dear ${{ steps.email_check.outcome.first_name }},</p>
-                  <p>Thank you for choosing DIAM. Attached is your DIAM client installation JSON, providing you with the latest and most secure features.</p>
+                  "body": "<p>Dear ${{ steps.email_check.outputs.first_name }},</p>
+                  <p>Thank you for choosing DIAM. Attached is your DIAM client installation JSON.</p>
                   <p>Please don''t hesitate to reach out if you have any questions or need further assistance.</p>
                   <p>Best regards,<br>Your DIAM Support Team</p>",  
                   "delayTS": 0,
