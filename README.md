@@ -103,7 +103,7 @@ endif
 @enduml
 ```
 
-<details>
+</details>
 
 ### Local set-up (Access Management team only)
 
