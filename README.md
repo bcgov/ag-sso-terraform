@@ -4,7 +4,7 @@ This repository serves as the central hub for managing Keycloak realms and clien
 
 ## How to create or update a client configuration
 
-1. Obtain permission from the DIAM Team to submit pull requests to this repository.
+1. Obtain permission from the `DIAM` Team to submit pull requests to this repository.
 2. Create a pull request containing your proposed changes to the client configuration file, ensuring that your modifications adhere to the proper formatting standards.
 3. An automated process will compare your changes against the current state of the Red Hat SSO.
 4. A bot will generate a comprehensive comparison report, which will be added to your pull request.
@@ -121,7 +121,7 @@ Once the above steps are complete, you will be able to run all Terraform command
 #### Terraform format
 
 This repository enforces having all configuration formatted in the same manner. 
-To ensure proper formatting run `terraform fmt -recursive` from the root of moh-keycloak-client-configurations.
+To ensure proper formatting run `terraform fmt -recursive` from the root of `ag-sso-terraform`.
 Terraform will modify the files, so they satisfy the formatting constraints.
 Environment variables set-up is not necessary to run this command, it can be performed by anyone who has Terraform installed.
 In case of being unable to install Terraform, formtting issues need to be resolved manually. 
