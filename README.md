@@ -39,7 +39,7 @@ The workflow will:
     * This step only runs on pull requests. The PR generates a plan. When the PR is merged, that plan will be applied.
     * This step will continue even when it errors. This allows the next step to display the plan error message even if
       this step fails.
-1. **Update Pull Request** adds a comment to the pull request with the results of the format, init and plan steps. In addition, it displays the plan output (`steps.plan.outputs.stdout`). This allows your team to review the results of the plan directly in the PR instead of viewing the GitHub Actions log. This step only runs on pull requests.
+1. **Update Pull Request** adds a comment to the pull request with the results of the format, init and plan steps. In addition, it displays the plan output (`steps.plan.outputs.stdout`). This allows your team to review the results of the plan directly in the PR instead of viewing the GitHub Actions log. This step only runs on pull requests. e.g https://github.com/bcgov/ag-sso-terraform/pull/8 
 1. **Terraform Plan Status** returns whether a plan was successfully generated or not. This step highlights whenever a plan fails because the "Terraform Plan" step continues on error.
 1. **Terraform Apply** applies the configuration. This step will only run when a commit is pushed to main.
 1. **Terraform Destroy** If there's an error applying your terrform plan, a rollback will be triggered to destroy any plan that was created initially. This allow us to rollback our red hat sso to its previous state before running your plan
