@@ -1,15 +1,15 @@
 # AG PSSG Common SSO Realm and Client Configuration
 
-This repository holds the keycloak realms and client configuration files for the Ministry of Attorney General and Public Safety Redhat SSO instance. Developers can open pull requests to create or change their client or realm configuration.
+This repository serves as the central hub for managing Keycloak realms and client configuration files specific to the Ministry of Attorney General and Public Safety Red Hat SSO instance. Developers are encouraged to submit pull requests for the creation or modification of their resource i.e client and realm configurations.
 
 ## How to create or update a client configuration
 
-1. Get permission from the DIAM Team to make pull requests to this repo.
-2. Create a pull request with your proposed changes to client configuration file. Make sure your changes are [properly formatted](#terraform-format).
-3. An automatic process will compare your changes to the current state of Red hat SSO.
-4. A bot will add a comparison report to your pull request.
-5. An Access Management Team member will merge your changes into the `main` branch.
-6. An automatic process will apply your changes to the Common SSO Red hat instance.
+1. Obtain permission from the DIAM Team to submit pull requests to this repository.
+2. Create a pull request containing your proposed changes to the client configuration file, ensuring that your modifications adhere to the proper formatting standards.
+3. An automated process will compare your changes against the current state of the Red Hat SSO.
+4. A bot will generate a comprehensive comparison report, which will be added to your pull request.
+5. A member of the Access Management Team will review and merge your changes into the main branch.
+6. An automated process will then apply the approved changes to the Common SSO Red Hat instance.
 
 ## Automation
 
@@ -29,6 +29,7 @@ The workflow will:
 ### Detailed description
 
 ![image](https://user-images.githubusercontent.com/1767127/169342125-20158f98-8094-4430-b2b3-4f3f539bd367.png)
+
 
 1. **Checkout** check outs the current configuration. Uses defines the action/Docker image to run that specific step. The checkout step "uses" GitHub's actions/checkout@v2 action.
 1. **Setup Terraform** retrieves the Terraform CLI used in the GitHub action workflow.
