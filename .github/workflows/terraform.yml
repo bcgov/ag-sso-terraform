@@ -19,6 +19,10 @@ jobs:
       TF_VAR_test_client_secret: ${{ secrets.TF_VAR_TEST_CLIENT_SECRET }}
       TF_VAR_prod_client_secret: ${{ secrets.TF_VAR_PROD_CLIENT_SECRET }}
       TF_VAR_client_auth_pass: ${{ secrets.TF_VAR_CLIENT_AUTH_PASS }}
+      TF_VAR_azure_authorization_url: ${{ secrets.AZURE_AUTHORIZATION_URL }}
+      TF_VAR_azure_token_url: ${{ secrets.AZURE_TOKEN_URL }}
+      TF_VAR_azure_client_id : ${{ secrets.AZURE_CLIENT_ID }}
+      TF_VAR_azure_client_secret: ${{ secrets.AZURE_CLIENT_SECRET }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3

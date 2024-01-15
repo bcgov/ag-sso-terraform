@@ -28,10 +28,15 @@ module "COMMON_SSO_DEV" {
   source = "./common-sso-dev"
 
 
-  client_id        = var.dev_client_id
-  client_secret    = var.dev_client_secret
-  keycloak_url     = var.dev_keycloak_url
-  client_auth_pass = var.client_auth_pass
+  client_id               = var.dev_client_id
+  client_secret           = var.dev_client_secret
+  keycloak_url            = var.dev_keycloak_url
+  client_auth_pass        = var.client_auth_pass
+  azure_alias             = "azure"
+  azure_authorization_url = var.azure_authorization_url
+  azure_token_url         = var.azure_token_url
+  azure_client_id         = var.azure_client_id
+  azure_client_secret     = var.azure_client_secret
 }
 
 # module "COMMON_SSO_TEST" {
