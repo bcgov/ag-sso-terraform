@@ -36,6 +36,7 @@ jobs:
           realm=${{ github.event.inputs.realm }}
           ls
           ./get_client_installation_json.sh ${{ github.event.inputs.client-id }} ${{ github.event.inputs.env }} ${{ github.event.inputs.realm }} ${{secrets.TF_VAR_DEV_CLIENT_SECRET}}> output_file.txt
+          cat output_file.txt
           if grep -q "Invalid http_code" output_file.txt; then
             echo "Invalid http_code in the output. Failing the workflow."
             cat output_file.txt
