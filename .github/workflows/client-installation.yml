@@ -36,8 +36,6 @@ jobs:
           realm=${{ github.event.inputs.realm }}
           ls
           ./get_client_installation_json.sh ${{ github.event.inputs.client-id }} ${{ github.event.inputs.env }} ${{ github.event.inputs.realm }}
-
-          convert the result to base 64 that will be attached to the email in the send email step
       - name: Get Email Access Token 
         if: steps.client_installation.outcome == 'success'
         uses: fjogeleit/http-request-action@v1
