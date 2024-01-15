@@ -1,0 +1,36 @@
+name: Manual Workflow
+
+on:
+  workflow_dispatch:
+    inputs:
+      client-id:
+        description: 'Client ID'
+        required: true
+      env:
+        description: 'Environment'
+        required: true
+      realm:
+        description: 'Realm'
+        required: true
+
+jobs:
+  job1:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Display Inputs
+        run: |
+          echo "Client ID: ${{ github.event.inputs.client-id }}"
+          echo "Environment: ${{ github.event.inputs.env }}"
+          echo "Realm: ${{ github.event.inputs.realm }}"
+      - name: Get Client Installation JSON
+        run: |
+          client_id=${{ github.event.inputs.client-id }}
+          env=${{ github.event.inputs.env }}
+          realm=${{ github.event.inputs.realm }}
+          ls
+          ./get_client_secret.sh ${{ github.event.inputs.client-id }} ${{ github.event.inputs.env }} ${{ github.event.inputs.realm }}
+
