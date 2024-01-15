@@ -48,7 +48,6 @@ jobs:
         id: encode
         run: |
             encoded_contents=$(base64 < output_file.txt)
-            echo $encoded_contents
             echo "::set-output name=encoded_contents::$encoded_contents"
       - name: Get Email Access Token 
         if: steps.client_installation.outcome == 'success' && steps.encode.outcome == 'success'
