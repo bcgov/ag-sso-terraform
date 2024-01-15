@@ -24,6 +24,7 @@ variable "azure_authorization_url" {
 variable "azure_alias" {
   description = "Client secret or password for client authentication"
   type        = string
+  default = "azure"
 }
 variable "azure_client_id" {
   description = "Client secret or password for client authentication"
