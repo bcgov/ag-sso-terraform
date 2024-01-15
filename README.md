@@ -110,7 +110,7 @@ endif
 In some rare cases you may need to set up Terraform locally. It is easy to do so. Note that this same
 configuration is used by GitHub Actions, so may refer to its commands and secrets for comparison.
 
-1. Install Terraform (use version identified in https://github.com/bcgov/moh-keycloak-client-configurations/blob/main/.github/workflows/terraform.yml).
+1. Install Terraform (use version identified in https://github.com/bcgov/ag-sso-terraform/blob/develop/.github/workflows/terraform.yml).
 2. Set environment variables.
 3. Checkout the project.
 4. Run `terraform init -backend-config="access_key={MINIO_ACCESS_KEY_ID}" -backend-config="secret_key={{MINIO_SECRET_KEY}}"`.
