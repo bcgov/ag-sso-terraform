@@ -1,9 +1,9 @@
 ---
-name: DIAM Client Secret Request Template {{ YOUR_CLIENT_NAME }}
+name: DIAM Client Secret Request Template
 about: This template is use to request your keycloak client installation information
-title: DIAM Keycloak Client Secret
+title: DIAM Keycloak Client Secret for {{ YOUR_CLIENT_NAME }}
 labels: client secret, help wanted
-assignees: rloisell, sookeke, leewrigh
+assignees: leewrigh, rloisell, sookeke
 
 ---
 
