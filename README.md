@@ -151,7 +151,23 @@ The values for the `TF_VAR_ENV_client_secret` environment variables are Keycloak
 
 The Terraform state file containing our Red hat Keycloak configuration is stored in an S3 compatible storgae (Minio) hosted internally in our Gold Cluster. In order for this to work, Terraform requires a service account with the necessary permissions to access the bucket. To fulfill this requirement, an acess key and secret was created in Minio with the necessily permission to read and write TF state files into our bucket
 
+## How to Request Client Credential Secret for your Client
 
+### GitHub Issue Creation Steps:
+
+1. Create a GitHub Issue with the following details:
+    - `client-id`: {{YOUR_DIAM_CLIENT_NAME}} (e.g., jam-lea)
+    - `env`: {{DIAM_ENV (DEV or TEST or PROD)}} (e.g., DEV)
+    - `realm`: {{DIAM_REALM}} (e.g., ISB)
+    - `email`: {{Requester Government Email Address}} (e.g., james.walker@gov.bc.ca)
+
+2. This will trigger our DIAM workflow and initiate approval from a DIAM team member.
+
+3. Upon approval, the workflow dispatcher pipeline grabs the client installation JSON from Keycloak via API.
+
+4. The workflow attaches this client installation JSON as an email attachment and sends it via email to the requester.
+
+5. The workflow then comments on the GitHub Issue to provide the status of the request.
 
 ## Acknowledgements
 

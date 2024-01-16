@@ -16,7 +16,7 @@ resource "keycloak_generic_protocol_mapper" "justin_claim_mapper" {
   protocol        = var.protocol
   protocol_mapper = "json-remote-claim"
   config = merge(var.config, {
-    "remote.parameters.user.attributes" = "firstname&lastName",
+    "remote.parameters.user.attributes" = "firstname&lastName&email",
     "remote.url"                        = var.remote_url,
     "remote.parameters.clientid"        = "false",
     "client.auth.url"                   = var.client_auth_url,

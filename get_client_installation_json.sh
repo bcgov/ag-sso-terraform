@@ -15,7 +15,6 @@ fi
 function get_bearer_token() {
     local oidc_token_endpoint="auth/realms/master/protocol/openid-connect/token"
     local username="service-config"
-    local password="kbQTmwQ6yke1Uo4gcnE1w0Jont9N67sK"
 
     local response=$(curl -s -w '%{http_code}' -X POST https://${keycloak_host}/${oidc_token_endpoint} \
         -H 'Content-Type: application/x-www-form-urlencoded' \
@@ -94,18 +93,20 @@ function get_client_secret() {
 }
 
 # Check if required arguments are provided
-if [ "$#" -ne 3 ]; then
-    echo "Usage: $0 <client_id> <env> <realm>"
+if [ "$#" -ne 4 ]; then
+    echo "Usage: $0 <client_id> <env> <realm> <password>"
     exit 1
 fi
 
 # Set Keycloak service base URL based on the environment
 case "$2" in
-    "dev")
+    "DEV")
         keycloak_host="sso-e27db1-dev.apps.gold.devops.gov.bc.ca"
+        #password="$TF_VAR_DEV_CLIENT_SECRET"
         ;;
-    "prod")
+    "PROD")
         keycloak_host="sso-e27db1-dev.apps.gold.devops.gov.bc.ca"
+        #password="$TF_VAR_PROD_CLIENT_SECRET"
         ;;
     *)
         echo "Invalid environment. Supported environments: dev, prod."
@@ -118,6 +119,8 @@ realm="$3"
 
 # Keycloak client ID
 client_id="$1"
+
+password="$4"
 
 
 

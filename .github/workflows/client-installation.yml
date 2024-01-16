@@ -1,4 +1,4 @@
-name: Manual Workflow
+name: Client Secret
 
 on:
   workflow_dispatch:
@@ -9,30 +9,209 @@ on:
       env:
         description: 'Environment'
         required: true
+        type: choice
+        options: 
+          - DEV
+          - TEST
+          - PROD
       realm:
         description: 'Realm'
         required: true
+      email:
+        description: 'Requester Government Email Address'
+        required: true
+  issues:
+    types:
+      - opened
+      - edited
 
 jobs:
-  job1:
+  
+  comment-on-issue:
+    if:  ${{ github.event_name == 'issues' && github.event.action == 'opened'}}
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
-      - name: Display Inputs
-        if: github.actor  == 'sookeke' || github.actor == 'lee.wright' 
+      - name: Comment on Issue
+        if: ${{ github.event_name == 'issues' && github.event.action == 'opened' }}
         run: |
-          echo "Client ID: ${{ github.event.inputs.client-id }}"
-          echo "Environment: ${{ github.event.inputs.env }}"
-          echo "Realm: ${{ github.event.inputs.realm }}"
+          gh issue comment ${{ github.event.issue.number }} --body " ℹ️  Thank you for your submission! Your request is now in progress within the DIAM workflow. Our dedicated DIAM team is reviewing your submission and will promptly handle your request. Your patience and cooperation are appreciated.
+
+          ❗ If you have any urgent concerns or questions, please feel free to reach out to our DIAM Support Team.
+          
+          🙏 We appreciate your collaboration and look forward to assisting you further.
+
+          ❤️ Best regards,
+          DIAM Support Team"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  client-installation-json:
+    environment:
+      name:  PROD
+    outputs:
+        env-status: ${{ steps.check-env.outputs.env_status }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check Workflow Dispatcher Status
+        id: check-env
+        run: |
+            echo "::set-output name=env_status::approved"
+
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+      - name: Check Environment and Reject if Prod
+        id: set-outputs
+        run: |
+          echo "::set-output name=approved::approved"
+      - name: Set Variables from Workflow Inputs or Extract from Issue
+        id: variables
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            # Set variables from workflow inputs
+            client_id="${{ github.event.inputs.client-id }}"
+            env="${{ github.event.inputs.env }}"
+            realm="${{ github.event.inputs.realm }}"
+            email="${{ github.event.inputs.email }}"
+          elif [ "${{ github.event_name }}" == "issues" ]; then
+            # Extract information from issue body
+            body="${{ github.event.issue.body }}"
+            client_id=$(echo "$body" | grep -oP '(?<=client-id: ).*' | tr -d '[:space:]')
+            env=$(echo "$body" | grep -oP '(?<=env: ).*' | tr -d '[:space:]')
+            realm=$(echo "$body" | grep -oP '(?<=realm: ).*' | tr -d '[:space:]')
+            email=$(echo "$body" | grep -oP '(?<=email: ).*' | tr -d '[:space:]')
+          else
+            echo "Unsupported event type. Exiting the workflow."
+            exit 1
+          fi
+
+          echo "::set-output name=client_id::$client_id"
+          echo "::set-output name=env::$env"
+          echo "::set-output name=realm::$realm"
+          echo "::set-output name=email::$email"
+
+      - name: Check Email Domain
+        id: email_check
+        run: |
+          if [[ "${{ steps.variables.outputs.email }}" != *'gov.bc.ca' ]]; then
+            echo "Invalid email domain. Failing the workflow."
+            exit 1
+          fi
+          first_name=$(echo "${{ steps.variables.outputs.email }}" | cut -d'.' -f1)
+          echo "::set-output name=first_name::$first_name"
       - name: Get Client Installation JSON
-        if: github.actor  == 'sookeke' || github.actor == 'lee.wright' 
+        id: client_installation
         run: |
-          client_id=${{ github.event.inputs.client-id }}
-          env=${{ github.event.inputs.env }}
-          realm=${{ github.event.inputs.realm }}
-          ls
-          ./get_client_installation_json.sh ${{ github.event.inputs.client-id }} ${{ github.event.inputs.env }} ${{ github.event.inputs.realm }}
+          client_id=${{ steps.variables.outputs.client_id }}
+          env=${{ steps.variables.outputs.env }}
+          realm=${{ steps.variables.outputs.realm }}
+
+          echo $client_id
+          echo $env
+          echo $realm
+        
+          input_env="${{ steps.variables.outputs.env }}"
+          
+          if [ "$input_env" == "DEV" ]; then
+            echo "Running script for DEV environment..."
+            ./get_client_installation_json.sh ${{ steps.variables.outputs.client_id }} ${{ steps.variables.outputs.env }} ${{ steps.variables.outputs.realm }} ${{secrets.TF_VAR_DEV_CLIENT_SECRET}}> output_file.txt
+          elif [ "$input_env" == "TEST" ]; then
+            echo "Running script for TEST environment..."
+            ./get_client_installation_json.sh ${{ steps.variables.outputs.client-id }} ${{ steps.variables.outputs.env }} ${{ steps.variables.outputs.realm }} ${{secrets.TF_VAR_DEV_CLIENT_SECRET}}> output_file.txt
+          elif [ "$input_env" == "PROD" ]; then
+            echo "Running script for PROD environment..."
+            ./get_client_installation_json.sh ${{ steps.variables.outputs.client-id }} ${{ steps.variables.outputs.env }} ${{ steps.variables.outputs.realm }} ${{secrets.TF_VAR_PROD_CLIENT_SECRET}}> output_file.txt
+          else
+            echo "Invalid environment. Allowed values: dev, test, prod."
+            exit 1
+          fi
+          
+          if grep -q "Invalid http_code" output_file.txt; then
+            echo "Invalid http_code in the output. Failing the workflow."
+            cat output_file.txt
+            exit 1
+          fi
+      - name: Encode Installation Json
+        if: steps.client_installation.outcome == 'success'
+        id: encode
+        run: |
+          encoded_contents=$(base64 -w 0 < output_file.txt)
+          echo "::set-output name=encoded_contents::$encoded_contents"
+      - name: Get Email Access Token 
+        if: steps.client_installation.outcome == 'success' && steps.encode.outcome == 'success'
+        id: token
+        uses: fjogeleit/http-request-action@v1
+        with:
+          url: 'https://dev.loginproxy.gov.bc.ca/auth/realms/comsvcauth/protocol/openid-connect/token'
+          method: 'POST'
+          username: ${{ secrets.CHES_DEV_CLIENT_ID}}
+          password: ${{ secrets.CHES_DEV_CLIENT_SECRET }}
+          customHeaders: '{"Content-Type": "application/x-www-form-urlencoded"}'
+          data: '{"grant_type": "client_credentials"}'
+      - name: Send Email 
+        if: steps.token.outcome == 'success' && steps.encode.outcome == 'success'
+        id: email
+        uses: fjogeleit/http-request-action@v1
+        with:
+            url: 'https://ches-dev.api.gov.bc.ca/api/v1/email'
+            method: 'POST'
+            bearerToken: ${{ fromJson(steps.token.outputs.response).access_token }}
+            customHeaders: '{"Content-Type": "application/json"}'
+            data: '{
+                  "bodyType": "html",
+                  "body": "<p>Dear ${{ steps.email_check.outputs.first_name }},</p>
+                  <p>🙏 Thank you for choosing DIAM. Attached is your DIAM client installation JSON.</p>
+                  <p>ℹ️ Please don''t hesitate to reach out if you have any questions or need further assistance.</p>
+                  <p>Best regards ❤️,<br>Your DIAM Support Team</p>",  
+                  "delayTS": 0,
+                  "encoding": "utf-8",
+                  "from": "JPSProviderIdentityPortal@gov.bc.ca",
+                  "priority": "normal",
+                  "subject": "DIAM Client Installation Json",
+                  "to": ["${{ steps.variables.outputs.email }}"],
+                  "attachments": [
+                    {
+                      "content": "${{ steps.encode.outputs.encoded_contents }}",
+                      "contentType": "text/markdown",
+                      "encoding": "base64",
+                      "filename": "client-installation.json"
+                    }
+                  ]
+                }
+              '
+      
+      - name: Comment and Close Issue
+        if: ${{ github.event_name == 'issues' && github.event.action == 'opened' && steps.email.outcome == 'success' }}
+        uses: peter-evans/close-issue@v3
+        with:
+          issue-number: ${{ github.event.issue.number }}
+          comment: " ℹ️ Your request has been completed. An email with the DIAM client json has been sent to ${{ steps.variables.outputs.email }}. Thank you."
+  
+  Dispatcher-Status:
+    needs: client-installation-json
+    if: ${{ failure() && github.event_name == 'issues' && needs.client-installation-json.result == 'failure'  }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+      - name: Notify user 
+        if: ${{ github.event_name == 'issues' && github.event.action == 'opened' }}
+        run: |
+          gh issue comment ${{ github.event.issue.number }} --body " ℹ️ We appreciate your submission, 💔 but unfortunately, your request has been rejected. Please review your issue submission and try again by creating a new issue.💔 Here is the possible rejection reasons:
+
+            - Invalid email address or none government email address
+            - Invalid client ID
+            - Wrong environemnt
+      
+            ❗ If you have further questions or concerns, feel free to reach out to our DIAM Support Team. 🙏 We appreciate your understanding.
+      
+            ❤️ Best regards,
+            DIAM Support Team "
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
 
