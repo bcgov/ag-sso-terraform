@@ -53,12 +53,22 @@ jobs:
   client-installation-json:
     environment:
       name:  PROD
+    outputs:
+        env-status: ${{ steps.check-env.outputs.env_status }}
     runs-on: ubuntu-latest
 
     steps:
+      - name: Check Workflow Dispatcher Status
+        id: check-env
+        run: |
+            echo "::set-output name=env_status::approved"
+
       - name: Checkout Repository
         uses: actions/checkout@v2
-
+      - name: Check Environment and Reject if Prod
+        id: set-outputs
+        run: |
+          echo "::set-output name=approved::approved"
       - name: Set Variables from Workflow Inputs or Extract from Issue
         id: variables
         run: |
@@ -183,15 +193,13 @@ jobs:
           comment: Your request has been completed. An email with the DIAM client json has been sent to ${{ steps.variables.outputs.email }}. Thank you.
   
   Dispatcher-Status:
-    if: ${{ github.event_name == 'workflow_dispatch' }}
     needs: client-installation-json
+    if: ${{ failure() }}
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout Repository
         run: |
-          echo Output from Job 1 ${{needs.client-installation-json.result }}
           echo "Output from Job 1: ${{ needs.client-installation-json.outputs }}"
           echo "status ${{  github.event.review.state }}"
-          echo "status ${{  github.event.workflow.state }} "
+          echo "status ${{  needs.client-installation-json.result }} "
 
