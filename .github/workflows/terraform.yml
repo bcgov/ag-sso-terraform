@@ -131,9 +131,9 @@ jobs:
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: terraform apply -auto-approve -input=false
         
-      - name: Terraform Destroy
-        if:  always() && github.ref == 'refs/heads/main' && github.event_name == 'push' && steps.apply.outcome == 'failure'
-        run: terraform destroy -auto-approve -input=false
+      # - name: Terraform Destroy
+      #   if:  always() && github.ref == 'refs/heads/main' && github.event_name == 'push' && steps.apply.outcome == 'failure'
+      #   run: terraform destroy -auto-approve -input=false
 
   
 
