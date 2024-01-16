@@ -1,3 +1,3 @@
-output "CLIENT" {
-  value = keycloak_openid_client.CLIENT
-}
+# output "CLIENT" {
+#   value = keycloak_openid_client.CLIENT
+# }
