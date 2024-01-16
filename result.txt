@@ -1,1 +1,0 @@
-{ "realm" : "master", "auth-server-url" : "https://sso-e27db1-dev.apps.gold.devops.gov.bc.ca/auth/", "ssl-required" : "external", "resource" : "service-config", "credentials" : { "secret" : "kbQTmwQ6yke1Uo4gcnE1w0Jont9N67sK" }, "confidential-port" : 0 }
