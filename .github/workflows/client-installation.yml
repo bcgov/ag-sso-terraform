@@ -33,7 +33,7 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Comment on Issue
         if: ${{ github.event_name == 'issues' && github.event.action == 'opened' }}
@@ -63,7 +63,7 @@ jobs:
             echo "::set-output name=env_status::approved"
 
       - name: Checkout Repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Check Environment and Reject if Prod
         id: set-outputs
         run: |
@@ -197,7 +197,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Notify user 
         if: ${{ github.event_name == 'issues' && github.event.action == 'opened' }}
         run: |
