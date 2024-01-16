@@ -18,7 +18,7 @@ resource "keycloak_openid_client" "CLIENT" {
   pkce_code_challenge_method          = ""
   realm_id                            = "ISB"
   service_accounts_enabled            = false
-  standard_flow_enabled               = false
+  standard_flow_enabled               = true
   use_refresh_tokens                  = true
   valid_redirect_uris = [
     "https://lea-web-e648d1-dev.apps.emerald.devops.gov.bc.ca*",
@@ -68,3 +68,25 @@ resource "keycloak_openid_user_attribute_protocol_mapper" "user_attribute_mapper
   claim_name     = "partId"
 }
 
+module "client-roles" {
+  source    = "../../../../../modules/client-roles"
+  client_id = keycloak_openid_client.CLIENT.id
+  realm_id  = keycloak_openid_client.CLIENT.realm_id
+  roles = {
+    "agencyDetailGet" = {
+      "name" = "agencyDetailGet"
+    },
+    "agencyDutyTypeDelete" = {
+      "name" = "agencyDutyTypeDelete"
+    },
+    "agencyDutyTypeGet" = {
+      "name" = "agencyDutyTypeGet"
+    },
+    "agencyDutyTypeSave" = {
+      "name" = "agencyDutyTypeSave"
+    },
+    "particAssignmentGet" = {
+      "name" = "particAssignmentGet"
+    },
+  }
+}
