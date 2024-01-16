@@ -35,14 +35,16 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v2
 
-      - uses: ben-z/actions-comment-on-issue@1.0.2
-        name: Comment on issue
-        id: comment
-        with:
-          message: "Thank you for your submission! The workflow is in progress."
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Comment on Issue and Close
+        if: ${{ github.event_name == 'issues' && github.event.action == 'opened' }}
+        run: |
+          gh issue comment ${{ github.event.issue.number }} --body "Thank you for your submission! The workflow is in progress."
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   client-installation-json:
+    if: github.event_name == 'issues' 
+    needs: comment-on-issue
     environment:
       name:  PROD
     runs-on: ubuntu-latest
