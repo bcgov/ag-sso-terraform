@@ -11,7 +11,7 @@ on:
 
 jobs:
   terraform:
-    name: "Terraform Init & Plan"
+    name: "Terraform"
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
