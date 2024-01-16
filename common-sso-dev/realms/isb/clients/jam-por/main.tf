@@ -18,7 +18,7 @@ resource "keycloak_openid_client" "CLIENT" {
   pkce_code_challenge_method          = ""
   realm_id                            = "ISB"
   service_accounts_enabled            = true
-  standard_flow_enabled               = false
+  standard_flow_enabled               = true
   use_refresh_tokens                  = true
   valid_redirect_uris = [
     "https://lea-web-e648d1-dev.apps.emerald.devops.gov.bc.ca*",
