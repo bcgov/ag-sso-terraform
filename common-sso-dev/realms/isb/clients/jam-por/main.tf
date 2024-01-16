@@ -17,7 +17,7 @@ resource "keycloak_openid_client" "CLIENT" {
   name                                = "jam-por"
   pkce_code_challenge_method          = ""
   realm_id                            = "ISB"
-  service_accounts_enabled            = true
+  service_accounts_enabled            = false
   standard_flow_enabled               = true
   use_refresh_tokens                  = true
   valid_redirect_uris = [
