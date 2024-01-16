@@ -67,6 +67,6 @@ module "JAM-POR" {
   source           = "./clients/jam-por"
   client_auth_pass = var.client_auth_pass
 }
-module "TOMCAT-CLIENT" {
+module "ORDS-TOMCAT-CLIENT" {
   source = "./clients/tomcat-client"
 }
