@@ -201,7 +201,7 @@ jobs:
       - name: Notify user 
         if: ${{ github.event_name == 'issues' && github.event.action == 'opened' }}
         run: |
-          gh issue comment ${{ github.event.issue.number }} --body " ℹ️ We appreciate your submission, 💔 but unfortunately, your request has been rejected. Please review your issue submission and try again.💔 Here is the possible rejection reasons:
+          gh issue comment ${{ github.event.issue.number }} --body " ℹ️ We appreciate your submission, 💔 but unfortunately, your request has been rejected. Please review your issue submission and try again by creating a new issue.💔 Here is the possible rejection reasons:
 
             - Invalid email address or none government email address
             - Invalid client ID
