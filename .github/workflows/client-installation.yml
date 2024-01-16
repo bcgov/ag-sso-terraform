@@ -1,4 +1,4 @@
-name: Client Installation
+name: Client Secret
 
 on:
   workflow_dispatch:
@@ -169,7 +169,7 @@ jobs:
                   <p>Best regards ❤️,<br>Your DIAM Support Team</p>",  
                   "delayTS": 0,
                   "encoding": "utf-8",
-                  "from": "jpsprovideridentityportal@gov.bc.ca",
+                  "from": "JPSProviderIdentityPortal@gov.bc.ca",
                   "priority": "normal",
                   "subject": "DIAM Client Installation Json",
                   "to": ["${{ steps.variables.outputs.email }}"],
