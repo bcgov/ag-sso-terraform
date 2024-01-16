@@ -28,7 +28,7 @@ on:
 jobs:
   
   comment-on-issue:
-    if:  ${{ github.event_name == 'issues' && (github.event.action == 'opened' || github.event.action == 'edited')}}
+    if:  ${{ github.event_name == 'issues' && github.event.action == 'opened' }}
     runs-on: ubuntu-latest
 
     steps:
@@ -189,7 +189,7 @@ jobs:
         uses: peter-evans/close-issue@v3
         with:
           issue-number: ${{ github.event.issue.number }}
-          comment: "``` Your request has been completed. An email with the DIAM client json has been sent to ${{ steps.variables.outputs.email }}. Thank you.```"
+          comment: " Your request has been completed. An email with the DIAM client json has been sent to ${{ steps.variables.outputs.email }}. Thank you."
   
   Dispatcher-Status:
     needs: client-installation-json
@@ -201,7 +201,7 @@ jobs:
       - name: Notify user 
         if: ${{ github.event_name == 'issues' && github.event.action == 'opened' }}
         run: |
-          gh issue comment ${{ github.event.issue.number }} --body "``` We appreciate your submission, but unfortunately, your request has been rejected. Please review your issue submission and try again.💔 Here is the possible rejection reasons:
+          gh issue comment ${{ github.event.issue.number }} --body "We appreciate your submission, but unfortunately, your request has been rejected. Please review your issue submission and try again.💔 Here is the possible rejection reasons:
 
             - Invalid email address or none government email address
             - Invalid client ID
@@ -210,7 +210,7 @@ jobs:
             If you have further questions or concerns, feel free to reach out to our DIAM Support Team. We appreciate your understanding.
       
             Best regards,
-            DIAM Support Team ```"
+            DIAM Support Team"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
