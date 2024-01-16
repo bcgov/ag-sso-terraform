@@ -24,6 +24,7 @@ resource "keycloak_openid_client" "CLIENT" {
     "https://lea-web-e648d1-dev.apps.emerald.devops.gov.bc.ca*",
     "http://localhost:3000*"
   ]
+  root_url = "https://lea-web-e648d1-dev.apps.emerald.devops.gov.bc.ca"
 
   web_origins = ["+"]
 
