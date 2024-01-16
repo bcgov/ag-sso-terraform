@@ -38,13 +38,13 @@ jobs:
       - name: Comment on Issue
         if: ${{ github.event_name == 'issues' && github.event.action == 'opened' }}
         run: |
-          gh issue comment ${{ github.event.issue.number }} --body "``` ℹ️  Thank you for your submission! Your request is now in progress within the DIAM workflow. Our dedicated DIAM team is reviewing your submission and will promptly handle your request. Your patience and cooperation are appreciated.
+          gh issue comment ${{ github.event.issue.number }} --body "```   Thank you for your submission! Your request is now in progress within the DIAM workflow. Our dedicated DIAM team is reviewing your submission and will promptly handle your request. Your patience and cooperation are appreciated.
 
-          ❗ If you have any urgent concerns or questions, please feel free to reach out to our DIAM Support Team.
+           If you have any urgent concerns or questions, please feel free to reach out to our DIAM Support Team.
           
-          🙏 We appreciate your collaboration and look forward to assisting you further.
+           We appreciate your collaboration and look forward to assisting you further.
 
-          ❤️ Best regards,
+          \u2139\ufe0f Best regards,
           DIAM Support Team```"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
