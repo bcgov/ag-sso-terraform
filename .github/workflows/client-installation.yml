@@ -40,7 +40,7 @@ jobs:
         run: |
           gh issue comment ${{ github.event.issue.number }} --body "Thank you for your submission! Your request is now in progress within the DIAM workflow. Our dedicated DIAM team is reviewing your submission and will promptly handle your request. Your patience and cooperation are appreciated.
 
-          If you have any urgent concerns or questions, please feel free to reach out to our DIAM Support Team. We strive to provide efficient and high-quality service to meet your needs.
+          If you have any urgent concerns or questions, please feel free to reach out to our DIAM Support Team. 
           
           We appreciate your collaboration and look forward to assisting you further.
           
@@ -194,16 +194,14 @@ jobs:
   
   Dispatcher-Status:
     needs: client-installation-json
-    if: ${{ failure() }}
+    if: ${{ failure() && github.event_name == 'issues' && needs.client-installation-json.result == 'failure'  }}
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
       - name: Notify user 
         if: ${{ github.event_name == 'issues' && github.event.action == 'opened' }}
         run: |
-          echo "event issue is ${{ github.event_name }}"
-          echo "event issue is ${{ needs.client-installation-json.result }}"
-          echo "event issue is ${{ needs.client-installation-json.outputs.env-status}}"
-
           gh issue comment ${{ github.event.issue.number }} --body "We appreciate your submission, but unfortunately, your request has been rejected. Please review your issue submission and try again. Here is the possible rejection reasons:
 
             - Invalid email address or none government email address
