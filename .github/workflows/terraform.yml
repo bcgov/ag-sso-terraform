@@ -132,6 +132,7 @@ jobs:
         run: terraform apply -auto-approve -input=false
 
       - name: Debug Info
+        if: always()
         run: |
           echo "Git ref: ${{ github.ref  }}"
           echo "Event name: ${{ github.event_name }}"
