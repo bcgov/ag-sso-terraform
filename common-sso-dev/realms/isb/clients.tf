@@ -70,3 +70,6 @@ module "JAM-POR" {
 module "ORDS-TOMCAT-CLIENT" {
   source = "./clients/tomcat-client"
 }
+module "JAM-POR-API-CLIENT" {
+  source = "./clients/jam-por-api"
+}
