@@ -74,6 +74,10 @@ jobs:
           client_id=${{ steps.variables.outputs.client_id }}
           env=${{ steps.variables.outputs.env }}
           realm=${{ steps.variables.outputs.realm }}
+
+          echo $client_id
+          echo $env
+          echo $realm
         
           input_env="${{ steps.variables.outputs.env }}"
           

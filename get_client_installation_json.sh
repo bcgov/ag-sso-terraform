@@ -100,11 +100,11 @@ fi
 
 # Set Keycloak service base URL based on the environment
 case "$2" in
-    "dev")
+    "DEV")
         keycloak_host="sso-e27db1-dev.apps.gold.devops.gov.bc.ca"
         #password="$TF_VAR_DEV_CLIENT_SECRET"
         ;;
-    "prod")
+    "PROD")
         keycloak_host="sso-e27db1-dev.apps.gold.devops.gov.bc.ca"
         #password="$TF_VAR_PROD_CLIENT_SECRET"
         ;;
