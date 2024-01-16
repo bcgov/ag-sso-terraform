@@ -35,7 +35,7 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v2
 
-      - name: Comment on Issue and Close
+      - name: Comment on Issue
         if: ${{ github.event_name == 'issues' && github.event.action == 'opened' }}
         run: |
           gh issue comment ${{ github.event.issue.number }} --body "Thank you for your submission! Your request is now in progress within the DIAM workflow. Our dedicated DIAM team is reviewing your submission and will promptly handle your request. Your patience and cooperation are appreciated.
@@ -45,7 +45,7 @@ jobs:
           We appreciate your collaboration and look forward to assisting you further.
           
           Best regards,
-          [Your Organization/Team Name]
+
           DIAM Support Team"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -194,12 +194,23 @@ jobs:
   
   Dispatcher-Status:
     needs: client-installation-json
-    if: ${{ failure() }}
+    if: ${{ failure() && github.event_name == 'issues' && needs.client-installation-json.result == 'failure' && needs.client-installation-json.outputs.env-status != 'approved' }}
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Repository
+      - name: Notify user 
+        if: ${{ github.event_name == 'issues' && github.event.action == 'opened' }}
         run: |
-          echo "Output from Job 1: ${{ needs.client-installation-json.outputs }}"
-          echo "status ${{  github.event.review.state }}"
-          echo "status ${{  needs.client-installation-json.result }} "
+          gh issue comment ${{ github.event.issue.number }} --body "We appreciate your submission, but unfortunately, your request has been rejected. Please review your issue submission and try again. Here is the possible rejection reasons:
+
+            - Invalid email address or none government email address
+            - Invalid client ID
+            - Wrong environemnt
+      
+            If you have further questions or concerns, feel free to reach out to our DIAM Support Team. We appreciate your understanding.
+      
+            Best regards,
+            DIAM Support Team"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
 
