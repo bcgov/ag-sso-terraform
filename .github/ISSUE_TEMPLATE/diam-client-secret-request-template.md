@@ -2,7 +2,7 @@
 name: DIAM Client Secret Request Template
 about: This template is use to request your keycloak client installation information
 title: DIAM Client Secret
-labels: help wanted
+labels: client secret, help wanted
 assignees: ''
 
 ---
