@@ -38,14 +38,14 @@ jobs:
       - name: Comment on Issue
         if: ${{ github.event_name == 'issues' && github.event.action == 'opened' }}
         run: |
-          gh issue comment ${{ github.event.issue.number }} --body "```   Thank you for your submission! Your request is now in progress within the DIAM workflow. Our dedicated DIAM team is reviewing your submission and will promptly handle your request. Your patience and cooperation are appreciated.
+          gh issue comment ${{ github.event.issue.number }} --body "``` Thank you for your submission! Your request is now in progress within the DIAM workflow. Our dedicated DIAM team is reviewing your submission and will promptly handle your request. Your patience and cooperation are appreciated.
 
            If you have any urgent concerns or questions, please feel free to reach out to our DIAM Support Team.
           
            We appreciate your collaboration and look forward to assisting you further.
 
-          \u2139\ufe0f Best regards,
-          DIAM Support Team```"
+          Best regards,
+          DIAM Support Team ```"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -189,7 +189,7 @@ jobs:
         uses: peter-evans/close-issue@v3
         with:
           issue-number: ${{ github.event.issue.number }}
-          comment: "``` ℹ️ Your request has been completed. An email with the DIAM client json has been sent to ${{ steps.variables.outputs.email }}. Thank you.```"
+          comment: "``` Your request has been completed. An email with the DIAM client json has been sent to ${{ steps.variables.outputs.email }}. Thank you.```"
   
   Dispatcher-Status:
     needs: client-installation-json
@@ -201,15 +201,15 @@ jobs:
       - name: Notify user 
         if: ${{ github.event_name == 'issues' && github.event.action == 'opened' }}
         run: |
-          gh issue comment ${{ github.event.issue.number }} --body "``` ℹ️ We appreciate your submission, 💔 but unfortunately, your request has been rejected. Please review your issue submission and try again.💔 Here is the possible rejection reasons:
+          gh issue comment ${{ github.event.issue.number }} --body "``` We appreciate your submission, but unfortunately, your request has been rejected. Please review your issue submission and try again.💔 Here is the possible rejection reasons:
 
             - Invalid email address or none government email address
             - Invalid client ID
             - Wrong environemnt
       
-            ❗ If you have further questions or concerns, feel free to reach out to our DIAM Support Team. 🙏 We appreciate your understanding.
+            If you have further questions or concerns, feel free to reach out to our DIAM Support Team. We appreciate your understanding.
       
-            ❤️ Best regards,
+            Best regards,
             DIAM Support Team ```"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
