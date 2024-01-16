@@ -24,7 +24,24 @@ on:
     types:
       - opened
       - edited
+
 jobs:
+  
+  comment-on-issue:
+    if:  ${{ github.event_name == 'issues' && github.event.action == 'opened'}}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - uses: ben-z/actions-comment-on-issue@1.0.2
+        name: Comment on issue
+        id: comment
+        with:
+          message: "Thank you for your submission! The workflow is in progress."
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
   client-installation-json:
     environment:
       name:  PROD
@@ -59,11 +76,7 @@ jobs:
           echo "::set-output name=env::$env"
           echo "::set-output name=realm::$realm"
           echo "::set-output name=email::$email"
-      - name: Comment on Issue
-        if: ${{ github.event_name == 'issues' && github.event.action == 'opened' }}
-        run: |
-            gh auth login --with-token ${{ secrets.GITHUB_TOKEN }}
-            gh issue comment ${{ github.event.issue.number }} --body "Thank you for your submission! The workflow is in progress."
+
       - name: Check Email Domain
         id: email_check
         run: |
@@ -153,12 +166,12 @@ jobs:
                   ]
                 }
               '
-      - name: Final Comment on Issue and Close
-        if: ${{ github.event_name == 'issues' && github.event.action == 'opened' && steps.email.outcome == 'success' }}
-        run: |
-          gh auth login --with-token ${{ secrets.GITHUB_TOKEN }}
-          gh issue comment ${{ github.event.issue.number }} --body "Your request has been completed. An email with the DIAM client json has been sent to ${{ steps.variables.outputs.email }}. Thank you."
-          gh issue close ${{ github.event.issue.number }}
       
+      - name: Comment and Close Issue
+        if: ${{ github.event_name == 'issues' && github.event.action == 'opened' && steps.email.outcome == 'success' }}
+        uses: peter-evans/close-issue@v3
+        with:
+          issue-number: ${{ github.event.issue.number }}
+          comment: Your request has been completed. An email with the DIAM client json has been sent to ${{ steps.variables.outputs.email }}. Thank you.
           
 
