@@ -29,7 +29,7 @@ resource "keycloak_openid_client" "CLIENT" {
 
   // use this to use the IDP stopper theme and assign idir as default scope
 
-  # login_theme = "bcgov-idp-stopper"
+  login_theme = "keycloak"
 
   # authentication_flow_binding_overrides {
   #   browser_id = "Idp Stopper"
