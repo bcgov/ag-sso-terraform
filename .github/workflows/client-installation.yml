@@ -18,9 +18,12 @@ on:
         description: 'Realm'
         required: true
       email:
-        description: 'Requester government email address'
+        description: 'Requester Government Email Address'
         required: true
-
+  issues:
+    types:
+      - opened
+      - edited
 jobs:
   client-installation-json:
     environment:
@@ -31,38 +34,58 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v2
 
-      - name: Display Inputs
+      - name: Set Variables from Workflow Inputs or Extract from Issue
+        id: variables
         run: |
-          echo "Client ID: ${{ github.event.inputs.client-id }}"
-          echo "Environment: ${{ github.event.inputs.env }}"
-          echo "Realm: ${{ github.event.inputs.realm }}"
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            # Set variables from workflow inputs
+            client_id="${{ github.event.inputs.client-id }}"
+            env="${{ github.event.inputs.env }}"
+            realm="${{ github.event.inputs.realm }}"
+            email="${{ github.event.inputs.email }}"
+          elif [ "${{ github.event_name }}" == "issues" ]; then
+            # Extract information from issue body
+            body="${{ github.event.issue.body }}"
+            client_id=$(echo "$body" | grep -oP '(?<=client-id: ).*' | tr -d '[:space:]')
+            env=$(echo "$body" | grep -oP '(?<=env: ).*' | tr -d '[:space:]')
+            realm=$(echo "$body" | grep -oP '(?<=realm: ).*' | tr -d '[:space:]')
+            email=$(echo "$body" | grep -oP '(?<=email: ).*' | tr -d '[:space:]')
+          else
+            echo "Unsupported event type. Exiting the workflow."
+            exit 1
+          fi
+
+          echo "::set-output name=client_id::$client_id"
+          echo "::set-output name=env::$env"
+          echo "::set-output name=realm::$realm"
+          echo "::set-output name=email::$email"
       - name: Check Email Domain
         id: email_check
         run: |
-          if [[ "${{ github.event.inputs.email }}" != *'gov.bc.ca' ]]; then
+          if [[ "${{ steps.variables.outputs.email }}" != *'gov.bc.ca' ]]; then
             echo "Invalid email domain. Failing the workflow."
             exit 1
           fi
-          first_name=$(echo "${{ github.event.inputs.email }}" | cut -d'.' -f1)
+          first_name=$(echo "${{ steps.variables.outputs.email }}" | cut -d'.' -f1)
           echo "::set-output name=first_name::$first_name"
       - name: Get Client Installation JSON
         id: client_installation
         run: |
-          client_id=${{ github.event.inputs.client-id }}
-          env=${{ github.event.inputs.env }}
-          realm=${{ github.event.inputs.realm }}
+          client_id=${{ steps.variables.outputs.client_id }}
+          env=${{ steps.variables.outputs.env }}
+          realm=${{ steps.variables.outputs.realm }}
         
-          input_env="${{ github.event.inputs.env }}"
+          input_env="${{ steps.variables.outputs.env }}"
           
           if [ "$input_env" == "DEV" ]; then
             echo "Running script for DEV environment..."
-            ./get_client_installation_json.sh ${{ github.event.inputs.client-id }} ${{ github.event.inputs.env }} ${{ github.event.inputs.realm }} ${{secrets.TF_VAR_DEV_CLIENT_SECRET}}> output_file.txt
+            ./get_client_installation_json.sh ${{ steps.variables.outputs.client_id }} ${{ steps.variables.outputs.env }} ${{ steps.variables.outputs.realm }} ${{secrets.TF_VAR_DEV_CLIENT_SECRET}}> output_file.txt
           elif [ "$input_env" == "TEST" ]; then
             echo "Running script for TEST environment..."
-            ./get_client_installation_json.sh ${{ github.event.inputs.client-id }} ${{ github.event.inputs.env }} ${{ github.event.inputs.realm }} ${{secrets.TF_VAR_DEV_CLIENT_SECRET}}> output_file.txt
+            ./get_client_installation_json.sh ${{ steps.variables.outputs.client-id }} ${{ steps.variables.outputs.env }} ${{ steps.variables.outputs.realm }} ${{secrets.TF_VAR_DEV_CLIENT_SECRET}}> output_file.txt
           elif [ "$input_env" == "PROD" ]; then
             echo "Running script for PROD environment..."
-            ./get_client_installation_json.sh ${{ github.event.inputs.client-id }} ${{ github.event.inputs.env }} ${{ github.event.inputs.realm }} ${{secrets.TF_VAR_PROD_CLIENT_SECRET}}> output_file.txt
+            ./get_client_installation_json.sh ${{ steps.variables.outputs.client-id }} ${{ steps.variables.outputs.env }} ${{ steps.variables.outputs.realm }} ${{secrets.TF_VAR_PROD_CLIENT_SECRET}}> output_file.txt
           else
             echo "Invalid environment. Allowed values: dev, test, prod."
             exit 1
@@ -110,7 +133,7 @@ jobs:
                   "from": "jpsprovideridentityportal@gov.bc.ca",
                   "priority": "normal",
                   "subject": "DIAM Client Installation Json",
-                  "to": ["${{ github.event.inputs.email }}"],
+                  "to": ["${{ steps.variables.outputs.email }}"],
                   "attachments": [
                     {
                       "content": "${{ steps.encode.outputs.encoded_contents }}",

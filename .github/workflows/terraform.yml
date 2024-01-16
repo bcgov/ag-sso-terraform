@@ -8,7 +8,7 @@ on:
 
 jobs:
   terraform:
-    name: "Terraform"
+    name: "Terraform Init & Plan"
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
@@ -128,7 +128,7 @@ jobs:
   deploy:
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     needs: terraform
-    name: "Terraform apply"
+    name: "Terraform Apply"
     environment:
       name:  PROD
     runs-on: ubuntu-latest
