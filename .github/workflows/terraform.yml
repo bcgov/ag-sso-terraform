@@ -131,6 +131,11 @@ jobs:
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: terraform apply -auto-approve -input=false
 
+      - name: Debug Info
+        run: |
+          echo "Git ref: ${{ github.ref  }}"
+          echo "Event name: ${{ github.event_name }}"
+          echo "Terraform Apply Outcome: ${{ steps.apply.outcome }}"
         
       - name: Terraform Destroy
         if: github.ref == 'refs/heads/main' && github.event_name == 'push' && steps.apply.outcome == 'failure'
