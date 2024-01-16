@@ -53,17 +53,17 @@ module "PIDP-SERVICE" {
   USER-MANAGEMENT-SERVICE = module.USER-MANAGEMENT-SERVICE
 }
 module "JAM-LEA-AUTHN" {
-  source = "./clients/jam-lea-authn"
+  source           = "./clients/jam-lea-authn"
   client_auth_pass = var.client_auth_pass
 }
 module "JAM-LEA-DAL" {
-  source = "./clients/jam-lea-dal"
+  source           = "./clients/jam-lea-dal"
   client_auth_pass = var.client_auth_pass
 }
 module "JAM-LEA-API" {
-  source = "./clients/jam-lea-api"  
+  source = "./clients/jam-lea-api"
 }
 module "JAM-POR" {
-  source = "./clients/jam-por"
-  client_auth_pass = var.client_auth_pass 
+  source           = "./clients/jam-por"
+  client_auth_pass = var.client_auth_pass
 }

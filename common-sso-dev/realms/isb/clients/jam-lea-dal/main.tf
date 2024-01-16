@@ -60,9 +60,9 @@ module "justin_claim" {
 #   ]
 # }
 resource "keycloak_openid_user_attribute_protocol_mapper" "user_attribute_mapper" {
-  realm_id         = keycloak_openid_client.CLIENT.realm_id
-  client_id        = keycloak_openid_client.CLIENT.id
-  name           = "Part Id to Token"
+  realm_id  = keycloak_openid_client.CLIENT.realm_id
+  client_id = keycloak_openid_client.CLIENT.id
+  name      = "Part Id to Token"
 
   user_attribute = "partId"
   claim_name     = "partId"
@@ -85,7 +85,7 @@ module "client-roles" {
     "agencyDutyTypeSave" = {
       "name" = "agencyDutyTypeSave"
     },
-      "particAssignmentGet" = {
+    "particAssignmentGet" = {
       "name" = "particAssignmentGet"
     },
   }
