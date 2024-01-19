@@ -34,6 +34,27 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+      - name: Check if organization member
+        id: is_organization_member
+        if: github.event.action == 'opened'
+        uses: JamesSingleton/is-organization-member@1.0.0
+        with:
+          organization: bcgov
+          username: ${{ github.event.issue.user.login }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create Comment and exit for non member
+        if: ${{ github.event_name == 'issues' && github.event.action == 'opened' && steps.is_organization_member.outputs.result == 'false'  }}
+        run: |
+          gh issue comment ${{ github.event.issue.number }} --body " ℹ️ We appreciate your submission, 💔 but unfortunately, the GitHub user ${{ github.event.issue.user.login }} is not a memeber of BCGOV organization.
+          This request has been rejected.
+      
+            ❗ If you have further questions or concerns, feel free to reach out to our DIAM Support Team. 🙏 We appreciate your understanding.
+      
+            ❤️ Best regards,
+            DIAM Support Team "
+            exit 1
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Comment on Issue
         if: ${{ github.event_name == 'issues' && github.event.action == 'opened' }}
@@ -52,22 +73,11 @@ jobs:
   client-installation-json:
     environment:
       name:  PROD
-    outputs:
-        env-status: ${{ steps.check-env.outputs.env_status }}
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check Workflow Dispatcher Status
-        id: check-env
-        run: |
-            echo "::set-output name=env_status::approved"
-
       - name: Checkout Repository
         uses: actions/checkout@v4
-      - name: Check Environment and Reject if Prod
-        id: set-outputs
-        run: |
-          echo "::set-output name=approved::approved"
       - name: Set Variables from Workflow Inputs or Extract from Issue
         id: variables
         run: |
