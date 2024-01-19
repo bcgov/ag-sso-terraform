@@ -37,11 +37,15 @@ jobs:
       - name: Check if organization member
         id: is_organization_member
         if: github.event.action == 'opened'
-        uses: JamesSingleton/is-organization-member@1.0.0
+        uses: JamesSingleton/is-organization-member@1.0.1
         with:
           organization: bcgov
           username: ${{ github.event.issue.user.login }}
           token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create Comment
+        if: |
+            ${{ steps.is_organization_member.outputs.result == 'false' }}
+        run: echo User Does Not Belong to testorg
       - name: Create Comment and exit for non member
         if: ${{ github.event_name == 'issues' && github.event.action == 'opened' && steps.is_organization_member.outputs.result == 'false'  }}
         run: |
