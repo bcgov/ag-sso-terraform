@@ -36,12 +36,14 @@ jobs:
         uses: actions/checkout@v4
       - name: Check if organization member
         id: is_organization_member
-        if: github.event.action == 'opened'
-        uses: JamesSingleton/is-organization-member@1.0.1
-        with:
-          organization: bcgov
-          username: ${{ github.event.issue.user.login }}
-          token: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          MEMBERSHIP_STATE=$(gh api orgs/bcgov/memberships/${{ github.event.issue.user.login }} | jq -r .state)
+          echo $MEMBERSHIP_STATE
+
+          if [ "$MEMBERSHIP_STATE" != "active" ]; then
+            echo "Error: User ${{ github.event.issue.user.login }} is not a member of the organization bcgov."
+            exit 1
+          fi
       - name: Create Comment
         if: |
             ${{ steps.is_organization_member.outputs.result == 'false' }}
