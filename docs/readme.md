@@ -5,7 +5,8 @@ Sam, a developer involved in the `Protection Order Registry` project, requires a
 ### Client Creation Workflow:
 
 1. **Fork DIAM IAC Code Base:**
-   - Sam forks the current DIAM IAC code base from the `main branch.`
+   - Sam clones the current DIAM IAC code base from the `main branch.`
+   - Sam Create a feature branch from `git checkout -b feature/jam-por-client main`
 
 2. **Local Setup:**
    - On her local machine, Sam specifies the realm and environment where she intends to create the client, typically using `ISB` realm.
@@ -17,9 +18,10 @@ Sam, a developer involved in the `Protection Order Registry` project, requires a
 
 4. **Commit Changes:**
    - Sam commits her changes in her forked repository.
+   - Sam pushes her feature branch `feature/jam-por-client`
 
 5. **Create Pull Request (PR):**
-   - A PR is created from Sam's forked repository to the DIAM IAC main repository.
+   - A PR is created from Sam's `feature branch` to the DIAM IAC repository `main` branch.
 
 6. **Request Review:**
    - Sam requests a review from a DIAM team member.
