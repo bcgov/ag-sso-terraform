@@ -43,21 +43,29 @@ jobs:
           if [ "$MEMBERSHIP_STATE" != "active" ]; then
             echo "Error: User ${{ github.event.issue.user.login }} is not a member of the organization bcgov."
 
-            gh issue comment ${{ github.event.issue.number }} --body " ℹ️ We appreciate your submission, 💔 but unfortunately, the GitHub user ${{ github.event.issue.user.login }} is not a member of BCGOV organization.
-            This request has been rejected.
-      
-            ❗ If you have further questions or concerns, feel free to reach out to our DIAM Support Team. 🙏 We appreciate your understanding.
-      
-            ❤️ Best regards,
-            DIAM Support Team "
+            
 
-
-
-            gh run cancel ${{ github.run_id }}
+            
             exit 1
           fi
         env:
           GH_TOKEN: ${{ secrets.SSO_PAT }}
+
+      - name: Cancle run
+        if: ${{ always() && steps.is_organization_member.outcome == 'failure' &&  github.event.issue.number }}
+        run: |
+          gh issue comment ${{ github.event.issue.number }} --body " ℹ️ We appreciate your submission, 💔 but unfortunately, the GitHub user ${{ github.event.issue.user.login }} is not a member of BCGOV organization.
+          This request has been rejected.
+    
+          ❗ If you have further questions or concerns, feel free to reach out to our DIAM Support Team. 🙏 We appreciate your understanding.
+    
+          ❤️ Best regards,
+          DIAM Support Team "
+          gh run cancel ${{ github.run_id }}
+
+          exit 1
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Comment on Issue
         if: ${{ github.event_name == 'issues' && github.event.action == 'opened' }}
