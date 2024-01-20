@@ -23,7 +23,6 @@ on:
   issues:
     types:
       - opened
-      - edited
 
 jobs:
   
