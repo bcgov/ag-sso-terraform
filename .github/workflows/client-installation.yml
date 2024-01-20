@@ -51,7 +51,9 @@ jobs:
             ❤️ Best regards,
             DIAM Support Team "
 
-            echo "workflow id is : ${{ github.run_id.id }} "
+            echo "workflow id is :" ${{ github.run_id.id }} 
+
+            gh run cancel ${{ github.run_id.id }}
             exit 1
           fi
         env:
