@@ -10,8 +10,33 @@ Sam, a developer involved in the `Protection Order Registry` project, requires a
 
 2. **Local Setup:**
    - On her local machine, Sam specifies the realm and environment where she intends to create the client, typically using `ISB` realm.
-   - Sam creates a client folder within the realm folder, e.g., `jam-por-api`.
-   - Using our DIAM-configured module, she adds the Keycloak client Terraform configuration.
+   - Sam creates a client folder within the realm folder, e.g., `jam-por-api` e.g. cd `isb/clients/jam-por-api`
+   - Using our DIAM-configured module, she adds the Keycloak client Terraform configuration. e.g
+
+   ```
+   // main.tf
+   module "por-api-client" {
+     source      = "../../../../../modules/oidc-client"
+     client_id   = "jam-por-api"
+     realm_id    = "ISB"
+     name        = "jam-por-api"
+     description = "Protection Order Registry API"
+     access_type = "CONFIDENTIAL"
+   
+     valid_redirect_uris = [
+       "https://por-api-e648d1-dev.apps.emerald.devops.gov.bc.ca/*",
+       "http://localhost:3000*"
+     ]
+   
+     web_origins = ["+"]
+   }
+   ```
+   - Finally, sam adds this module to the `isb/clients.tf` e.g.
+   ```
+   module "JAM-POR-API-CLIENT" {
+     source = "./clients/jam-por-api"
+   }
+   ```
 
 3. **Format Terraform Code:**
    - Sam ensures the Terraform code is properly formatted by running the formatting command.
