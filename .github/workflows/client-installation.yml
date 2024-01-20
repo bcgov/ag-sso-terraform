@@ -23,7 +23,6 @@ on:
   issues:
     types:
       - opened
-      - edited
 
 jobs:
   
@@ -34,6 +33,38 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+      - name: Check if organization member
+        id: is_organization_member
+        run: |
+          MEMBERSHIP_STATE=$(gh api orgs/bcgov/memberships/${{ github.event.issue.user.login }} | jq -r .state)
+          echo $MEMBERSHIP_STATE
+
+          if [ "$MEMBERSHIP_STATE" != "active" ]; then
+            echo "Error: User ${{ github.event.issue.user.login }} is not a member of the organization bcgov."
+
+            
+
+            
+            exit 1
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.SSO_PAT }}
+
+      - name: Cancel run and reject request 
+        if: ${{ always() && steps.is_organization_member.outcome == 'failure' &&  github.event.issue.number }}
+        run: |
+          gh issue comment ${{ github.event.issue.number }} --body " ℹ️ We appreciate your submission, 💔 but unfortunately, the GitHub user ${{ github.event.issue.user.login }} is not a member of BCGOV organization.
+          This request has been rejected.
+    
+          ❗ If you have further questions or concerns, feel free to reach out to our DIAM Support Team. 🙏 We appreciate your understanding.
+    
+          ❤️ Best regards,
+          DIAM Support Team "
+          gh run cancel ${{ github.run_id }}
+
+          exit 1
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Comment on Issue
         if: ${{ github.event_name == 'issues' && github.event.action == 'opened' }}
@@ -52,22 +83,12 @@ jobs:
   client-installation-json:
     environment:
       name:  PROD
-    outputs:
-        env-status: ${{ steps.check-env.outputs.env_status }}
     runs-on: ubuntu-latest
+    needs: comment-on-issue
 
     steps:
-      - name: Check Workflow Dispatcher Status
-        id: check-env
-        run: |
-            echo "::set-output name=env_status::approved"
-
       - name: Checkout Repository
         uses: actions/checkout@v4
-      - name: Check Environment and Reject if Prod
-        id: set-outputs
-        run: |
-          echo "::set-output name=approved::approved"
       - name: Set Variables from Workflow Inputs or Extract from Issue
         id: variables
         run: |
