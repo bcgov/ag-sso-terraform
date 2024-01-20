@@ -29,9 +29,9 @@ Sam, a developer involved in the `Protection Order Registry` project, requires a
 7. **Review and Merge:**
    - DIAM team members review Sam's proposed changes and merge the request to create her client.
 
-### Client Credential Service Account Workflow:
+### Client Installation Request Workflow:
 
-If Sam's client is a Confidential Client and she needs its secret:
+For Sam to integrate this client into her application, she must possess the necessary details for the client, such as the `client secret` or the client `OIDC` installation `JSON`. In doing so, Sam will :
 
 1. **Create GitHub Issue:**
    - Sam goes to the DIAM IAC code base and creates a GitHub issue using the provided template.
