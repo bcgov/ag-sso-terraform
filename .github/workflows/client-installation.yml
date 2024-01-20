@@ -45,7 +45,19 @@ jobs:
             exit 1
           fi
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.SSO_PAT }}
+      - name: Check if organization member
+        id: org
+        if: github.event.action == 'opened'
+        uses: JamesSingleton/is-organization-member@1.0.0
+        with:
+          organization: bcgov
+          username: ${{ github.event.issue.user.login }}
+          token: ${{ secrets.SSO_PAT }}
+      - name: Create Comment
+        if: |
+          ${{ steps.is_organization_member.outputs.result == 'false' }}
+        run: echo User Does Not Belong to testorg
       - name: Create Comment
         if: |
             ${{ steps.is_organization_member.outputs.result == 'false' }}
