@@ -56,14 +56,10 @@ jobs:
           token: ${{ secrets.SSO_PAT }}
       - name: Create Comment
         if: |
-          ${{ steps.is_organization_member.outputs.result == 'false' }}
-        run: echo User Does Not Belong to testorg
-      - name: Create Comment
-        if: |
-            ${{ steps.is_organization_member.outputs.result == 'false' }}
-        run: echo User Does Not Belong to testorg
+          ${{ steps.org.outputs.result == 'false' }}
+        run: echo User Does Not Belong to bcgov
       - name: Create Comment and exit for non member
-        if: ${{ github.event_name == 'issues' && github.event.action == 'opened' && steps.is_organization_member.outputs.result == 'false'  }}
+        if: ${{ github.event_name == 'issues' && github.event.action == 'opened' && steps.org.outputs.result == 'false'  }}
         run: |
           gh issue comment ${{ github.event.issue.number }} --body " ℹ️ We appreciate your submission, 💔 but unfortunately, the GitHub user ${{ github.event.issue.user.login }} is not a memeber of BCGOV organization.
           This request has been rejected.
