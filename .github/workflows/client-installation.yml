@@ -58,6 +58,7 @@ jobs:
           GH_TOKEN: ${{ secrets.SSO_PAT }}
     
       - uses: styfle/cancel-workflow-action
+        name: Cancel workflow
         if: always() && steps.is_organization_member.outcome == 'failure'
         with:
           workflow_id: ${{ github.event.workflow.id }}
