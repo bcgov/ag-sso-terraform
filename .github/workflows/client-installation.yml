@@ -43,7 +43,7 @@ jobs:
           if [ "$MEMBERSHIP_STATE" != "active" ]; then
             echo "Error: User ${{ github.event.issue.user.login }} is not a member of the organization bcgov."
 
-            gh issue comment ${{ github.event.issue.number }} --body " ℹ️ We appreciate your submission, 💔 but unfortunately, the GitHub user ${{ github.event.issue.user.login }} is not a memeber of BCGOV organization.
+            gh issue comment ${{ github.event.issue.number }} --body " ℹ️ We appreciate your submission, 💔 but unfortunately, the GitHub user ${{ github.event.issue.user.login }} is not a member of BCGOV organization.
             This request has been rejected.
       
             ❗ If you have further questions or concerns, feel free to reach out to our DIAM Support Team. 🙏 We appreciate your understanding.
