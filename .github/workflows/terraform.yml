@@ -53,7 +53,7 @@ jobs:
             <br>
             To resolve the issues:
             <br>
-            <a href="https://github.com/bcgov/moh-keycloak-client-configurations#terraform-format">Terraform format instructions</a>
+            <a href="https://github.com/bcgov/ag-sso-terraform#terraform-format">Terraform format instructions</a>
             </details>
 
             *Pushed by: @${{ github.actor }}, Action: \`${{ github.event_name }}\`*`;
