@@ -51,7 +51,7 @@ jobs:
             ❤️ Best regards,
             DIAM Support Team "
 
-            echo "workflow id is : ${{ github.event.workflow.id }} "
+            echo "workflow id is : ${{ github.run_id.id }} "
             exit 1
           fi
         env:
@@ -61,7 +61,12 @@ jobs:
         uses: styfle/cancel-workflow-action@0.12.0
         if: ${{ always() && steps.is_organization_member.outcome == 'failure' }}
         with:
-          workflow_id: ${{ github.event.workflow.id }}
+          all_but_latest: true
+      - name: Cancel workflow
+        uses: styfle/cancel-workflow-action@0.12.0
+        if: ${{ always() && steps.is_organization_member.outcome == 'failure' }}
+        with:
+          workflow_id: ${{ github.run_id.id }}
 
       - name: Comment on Issue
         if: ${{ github.event_name == 'issues' && github.event.action == 'opened' }}
