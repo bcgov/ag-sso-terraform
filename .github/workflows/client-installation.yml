@@ -70,7 +70,7 @@ jobs:
         if: ${{ always() && steps.is_organization_member.outcome == 'failure' }}
         with:
           access_token: ${{ secrets.SSO_PAT}}
-          workflow_id: ${{ github.event.workflow.id }}
+          workflow_id: ${{ github.run_id }}
 
       - name: Comment on Issue
         if: ${{ github.event_name == 'issues' && github.event.action == 'opened' }}
