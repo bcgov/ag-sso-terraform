@@ -49,10 +49,10 @@ Sam, a developer involved in the `Protection Order Registry` project, requires a
    - A PR is created from Sam's `feature branch` to the DIAM IAC repository `main` branch.
 
 6. **Request Review:**
-   - Sam requests a review from a DIAM team member.
+   - Immediately the PR is created, a review email request will be sent to the DIAM team members for review.
 
 7. **Review and Merge:**
-   - DIAM team members review Sam's proposed changes and merge the request to create her client.
+   - A DIAM team member review Sam's proposed changes and merge the request to create her client.
 
 ### Client Installation Request Workflow:
 

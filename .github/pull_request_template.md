@@ -4,7 +4,7 @@ Please include a short summary of the change.
 
 ### Context
 
-What is/are the context for these changes? For example: particular role needs to be shown in token. Reference JIRA Board task, if applicable.
+What is/are the context for these changes? For example: particular role needs to be shown in token, JSUTIN Claims etc ?. Reference JIRA Board task, if applicable.
 
 ### Quality Check
 
