@@ -1,0 +1,10 @@
+version: 1
+data_management_roles:
+  product_owner: james orage
+product_information:
+  ministry: AG
+  product_acronym: DIAM
+  product_description: This is base test techdoc for AG and PSSG
+  product_name: Common SSO
+product_technology_information:
+  hosting_platforms: Private-Cloud-Openshift

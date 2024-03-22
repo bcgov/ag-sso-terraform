@@ -1,0 +1,18 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: ag-pssg-testdoc
+  title: AG-PSSG-TESTDOC
+  description: This is base test techdoc for AG and PSSG
+  annotations:
+    github.com/project-slug: bcgov/ag-sso-terraform
+    backstage.io/techdocs-ref: dir:.
+    bcgovpubcode.gov.bc.ca/ministry: AG
+    bcgovpubcode.gov.bc.ca/product_name: Common SSO
+    bcgovpubcode.gov.bc.ca/product_acronym: DIAM
+    bcgovpubcode.gov.bc.ca/product_owner: james orage
+    developer.gov.bc.ca/source_template: default/docs-template-v2
+spec:
+  type: documentation
+  lifecycle: experimental
+  owner: group:default/ag-pssg-emerald
